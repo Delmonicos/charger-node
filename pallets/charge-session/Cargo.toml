@@ -1,5 +1,5 @@
 [package]
-authors = ['adetante <antoine.detante@gmail.com>']
+authors = ['adetante <antoine.detante@gmail.com>', 'fcroiseaux <fcroiseaux@gmail.com>']
 description = 'FRAME pallet for Delmonico'
 edition = '2018'
 license = 'Unlicense'
