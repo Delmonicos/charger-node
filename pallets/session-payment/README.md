@@ -1,11 +1,10 @@
-# charge-session pallet
+# session-payment pallet
 
-A simple pallet which tracks charging sessions.
-
-Two kind of accounts: user and charger
+A pallet that execute payments if user has given his consent.
 
 Workflow:
-  - user requests a new charging session
-  - charger confirms the request and records the beginning of the session
-  - charger finishes the session and records the end of the session
+  - user gives his consent to initiate payment from a giben IBAN and BIC CODE.
+  - user execute a charging session.
+  - when charging session is finished, a tariff smart contract calculate the price of the charging session and 
+    initiate a payment for the user. 
 
