@@ -23,7 +23,7 @@ use charger_node_runtime::Block;
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
-		"Substrate Node".into()
+		"Charger Node".into()
 	}
 
 	fn impl_version() -> String {
