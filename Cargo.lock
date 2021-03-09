@@ -730,6 +730,7 @@ name = "charger-node"
 version = "3.0.0"
 dependencies = [
  "charger-node-runtime",
+ "charger-service",
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "jsonrpc-core",
@@ -754,6 +755,7 @@ dependencies = [
  "sp-consensus",
  "sp-consensus-aura",
  "sp-core",
+ "sp-externalities",
  "sp-finality-grandpa",
  "sp-inherents",
  "sp-runtime",
@@ -801,6 +803,16 @@ dependencies = [
  "sp-transaction-pool",
  "sp-version",
  "substrate-wasm-builder",
+]
+
+[[package]]
+name = "charger-service"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "log",
+ "sp-externalities",
+ "sp-runtime-interface",
 ]
 
 [[package]]
@@ -3777,6 +3789,7 @@ dependencies = [
 name = "pallet-charge-session"
 version = "1.0.0"
 dependencies = [
+ "charger-service",
  "frame-support",
  "frame-system",
  "pallet-timestamp",

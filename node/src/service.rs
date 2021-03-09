@@ -12,12 +12,26 @@ use sp_consensus_aura::sr25519::{AuthorityPair as AuraPair};
 use sc_finality_grandpa::SharedVoterState;
 use sc_keystore::LocalKeystore;
 
+use charger_service::runtime::externalities::{ChargerExt, ChargerExternalities};
+
+struct ExtensionsFactory {}
+
+impl sc_client_api::execution_extensions::ExtensionsFactory for ExtensionsFactory{
+  fn extensions_for(&self, capabilities: sp_core::offchain::Capabilities) -> sp_externalities::Extensions {
+    let mut ext = sp_externalities::Extensions::new();
+    if capabilities.has(sp_core::offchain::Capability::OffchainWorkerDbWrite) {
+      ext.register(ChargerExt::new(ChargerExternalities::new()));
+    }
+    ext
+  }
+}
+
 // Our native executor instance.
 native_executor_instance!(
 	pub Executor,
 	charger_node_runtime::api::dispatch,
 	charger_node_runtime::native_version,
-	frame_benchmarking::benchmarking::HostFunctions,
+	(frame_benchmarking::benchmarking::HostFunctions, charger_service::runtime::offchain::api::HostFunctions),
 );
 
 type FullClient = sc_service::TFullClient<Block, RuntimeApi, Executor>;
@@ -47,6 +61,8 @@ pub fn new_partial(config: &Configuration) -> Result<sc_service::PartialComponen
 	let (client, backend, keystore_container, task_manager) =
 		sc_service::new_full_parts::<Block, RuntimeApi, Executor>(&config)?;
 	let client = Arc::new(client);
+
+	client.execution_extensions().set_extensions_factory(Box::new(ExtensionsFactory{}));
 
 	let select_chain = sc_consensus::LongestChain::new(backend.clone());
 
