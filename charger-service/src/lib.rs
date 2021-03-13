@@ -6,4 +6,4 @@ pub mod runtime;
 mod api;
 
 #[cfg(feature = "std")]
-mod mock;
+pub mod mock;

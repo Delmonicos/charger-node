@@ -9,8 +9,8 @@ pub enum ChargeStatus {
 
 pub trait ChargerApi {
     /// Start a new charge session
-    fn start_new_charge(&mut self) -> Result<u64>;
+    fn start_new_charge(&mut self) -> Result<()>;
 
     /// Get charge session status
-    fn get_charge_status(&mut self, id: u64) -> Result<ChargeStatus>;
+    fn get_current_charge_status(&mut self) -> Result<ChargeStatus>;
 }

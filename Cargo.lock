@@ -3792,6 +3792,7 @@ dependencies = [
  "charger-service",
  "frame-support",
  "frame-system",
+ "hex-literal",
  "pallet-timestamp",
  "parity-scale-codec",
  "serde",

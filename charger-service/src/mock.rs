@@ -1,43 +1,38 @@
-use log::{debug, info};
 use anyhow::Result;
-use std::collections::HashMap;
+use log::{debug, info};
 use std::time::{Duration, Instant};
 
 use crate::api::*;
 
 pub struct MockCharger {
-    active_charges: HashMap<u64, Instant>,
-    next_id: u64,
+    active_charge_since: Option<Instant>,
 }
 
 impl MockCharger {
     pub fn new() -> MockCharger {
         MockCharger {
-            active_charges: HashMap::new(),
-            next_id: 0,
+            active_charge_since: None,
         }
     }
 }
 
 impl ChargerApi for MockCharger {
-    fn start_new_charge(&mut self) -> Result<u64> {
+    fn start_new_charge(&mut self) -> Result<()> {
         let now = std::time::Instant::now();
-        let id = self.next_id;
-        self.next_id = id + 1;
-        self.active_charges.insert(id, now);
-        info!("New charge session  with id {}", id);
-        Ok(id)
+        debug!("New charge session started");
+        self.active_charge_since = Some(now);
+        Ok(())
     }
 
-    fn get_charge_status(&mut self, id: u64) -> Result<ChargeStatus> {
-        debug!("Get charge status for id {}", id);
-        let status = match self.active_charges.get(&id) {
+    fn get_current_charge_status(&mut self) -> Result<ChargeStatus> {
+        debug!("Get charge status");
+        let status = match self.active_charge_since {
             None => ChargeStatus::NotFound,
             Some(created_at)
-                if Instant::now().duration_since(created_at.clone()) > Duration::from_secs(10) =>
+                if Instant::now().duration_since(created_at.clone()) > Duration::from_secs(20) =>
             {
-                self.active_charges.remove(&id);
-                info!("Charge {} is ended!", id);
+                self.active_charge_since = None;
+                info!("Charge is ended!");
                 ChargeStatus::Ended { kwh: 999 }
             }
             _ => ChargeStatus::Active,
@@ -48,7 +43,7 @@ impl ChargerApi for MockCharger {
 
 #[cfg(test)]
 mod test {
-    use crate::api::{ChargerApi, ChargeStatus};
+    use crate::api::{ChargeStatus, ChargerApi};
     use crate::mock::MockCharger;
 
     #[test]
@@ -57,37 +52,34 @@ mod test {
 
         // Check status before
         let status_before = charger_api
-            .get_charge_status(0)
+            .get_current_charge_status()
             .expect("Cannot get charge status");
         assert_eq!(status_before, ChargeStatus::NotFound);
 
         // Start new charge
-        let charge_id = charger_api
-            .start_new_charge()
-            .expect("Cannot start new charge");
-        assert_eq!(charge_id, 0);
+        assert_eq!(charger_api.start_new_charge().is_ok(), true);
 
         // Check status after
         let status_after = charger_api
-            .get_charge_status(0)
+            .get_current_charge_status()
             .expect("Cannot get charge status");
         assert_eq!(status_after, ChargeStatus::Active);
     }
 
     #[test]
-    fn should_end_session_after_10s() {
+    fn should_end_session_after_20s() {
         let mut charger_api = MockCharger::new();
 
         // Start new charge
-        let charge_id = charger_api
+        charger_api
             .start_new_charge()
             .expect("Cannot start new charge");
 
-        // Check status after 10s
-        std::thread::sleep(std::time::Duration::from_secs(11));
+        // Check status after 21s
+        std::thread::sleep(std::time::Duration::from_secs(21));
 
         let status_after = charger_api
-            .get_charge_status(charge_id)
+            .get_current_charge_status()
             .expect("Cannot get charge status");
         assert_eq!(status_after, ChargeStatus::Ended { kwh: 999 });
     }
