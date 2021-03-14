@@ -21,7 +21,7 @@ frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
 sp-runtime = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = '3.0.0'}
-pallet-did = { git = "https://github.com/Delmonicos/pallet-did"}
+pallet-did = { git = "https://github.com/Delmonicos/pallet-did", default-features = false}
 
 
 [dev-dependencies]
