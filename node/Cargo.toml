@@ -23,6 +23,7 @@ structopt = '0.3.8'
 
 # local dependencies
 charger-node-runtime = { path = '../runtime', version = '3.0.0' }
+charger-service = { path = '../charger-service', default-features = false }
 
 # Substrate dependencies
 frame-benchmarking = '3.0.0'
@@ -44,6 +45,8 @@ sp-inherents = '3.0.0'
 sp-runtime = '3.0.0'
 sp-transaction-pool = '3.0.0'
 pallet-contracts = '3.0.0'
+sp-externalities = { version = "0.9.0", default-features = false }
+#sp-keystore = '0.9.0'
 
 # These dependencies are used for the node's RPCs
 jsonrpc-core = "15.1.0"
