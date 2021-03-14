@@ -7,7 +7,7 @@ use pallet_timestamp as timestamp;
 #[cfg(test)]
 mod tests;
 
-use charger_service::runtime::offchain::api as charger_api;
+use charger_service::runtime::offchain::{api as charger_api, ChargeStatus};
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
 pub struct ChargeRequest<UserId, Moment> {
@@ -53,9 +53,10 @@ pub mod pallet {
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::{
-        offchain::{AppCrypto, CreateSignedTransaction, Signer},
+        offchain::{AppCrypto, CreateSignedTransaction, SendSignedTransaction, Signer},
         pallet_prelude::*,
     };
+    use sp_runtime::{traits::IdentifyAccount, RuntimeAppPublic};
 
     #[pallet::config]
     #[pallet::disable_frame_system_supertrait_check]
@@ -81,27 +82,27 @@ pub mod pallet {
         StorageMap<_, Blake2_128Concat, T::AccountId, ChargingSession<T::AccountId, T::Moment>>;
 
     #[pallet::event]
+    //#[pallet::metadata(T::AccountId = "AccountId", T::Moment = "Timestamp")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        // SessionRequested(User, Charger, Timestamp)
+        /// SessionRequested(User, Charger, Timestamp)
         SessionRequested(T::AccountId, T::AccountId, T::Moment),
-        // SessionStarted(User, Charger, Timestamp)
+        /// SessionStarted(User, Charger, Timestamp)
         SessionStarted(T::AccountId, T::AccountId, T::Moment),
-        // SessionEnded(User, Charger, Timestamp)
-        SessionEnded(T::AccountId, T::AccountId, T::Moment),
+        /// SessionEnded(User, Charger, Timestamp, kwh)
+        SessionEnded(T::AccountId, T::AccountId, T::Moment, u64),
     }
 
     #[pallet::error]
     pub enum Error<T> {
         NoChargingRequest,
         NoChargingSession,
+        ChargerIsBusy,
     }
 
     #[pallet::hooks]
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-        fn offchain_worker(block: T::BlockNumber) {
-            debug::native::info!("Run offchain worker for block: {:?}", block);
-
+        fn offchain_worker(_block: T::BlockNumber) {
             // Offchain processing of charge requests & active charge sessions
             Self::process_charge_sessions();
         }
@@ -116,6 +117,25 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             let now = <timestamp::Module<T>>::get();
+
+            // Check that this charger does not have another pending request
+            // TODO: expiration period for request?
+            match UserRequests::<T>::get(&charger) {
+                Some(request) => {
+                    debug::native::warn!("Charger {} has pending request {:?}: cannot store a new request", &charger, &request);
+                    return Err(Error::<T>::ChargerIsBusy.into());
+                },
+                _ => {}
+            }
+
+            // Check that this charger does not have an active charging session
+            match ActiveSessions::<T>::get(&charger) {
+                Some(session) => {
+                    debug::native::warn!("Charger {} has already active session {:?}: cannot store a new request", &charger, &session);
+                    return Err(Error::<T>::ChargerIsBusy.into());
+                },
+                _ => {}
+            }
 
             // Add the request to the storage with current timestamp
             UserRequests::<T>::insert(
@@ -148,7 +168,6 @@ pub mod pallet {
                 _ => {}
             }
             // TODO: check timestamp for maximal period of time between new_request & start_session ?
-            // TODO: check that this user does not have another active charging session
 
             // Remove the request from storage
             UserRequests::<T>::take(&sender);
@@ -169,7 +188,7 @@ pub mod pallet {
         }
 
         #[pallet::weight(1_000)]
-        pub fn end_session(origin: OriginFor<T>, user: T::AccountId) -> DispatchResultWithPostInfo {
+        pub fn end_session(origin: OriginFor<T>, user: T::AccountId, kwh: u64) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             let now = <timestamp::Module<T>>::get();
 
@@ -185,10 +204,8 @@ pub mod pallet {
             // Remove the request from storage
             ActiveSessions::<T>::take(&sender);
 
-            // TODO: offchain storage of charging time
-
             // Emit an event
-            Self::deposit_event(Event::SessionEnded(user, sender, now));
+            Self::deposit_event(Event::SessionEnded(user, sender, now, kwh));
 
             Ok(().into())
         }
@@ -196,10 +213,6 @@ pub mod pallet {
 
     impl<T: Config> Pallet<T> {
         fn process_charge_sessions() {
-            use frame_system::offchain::SendSignedTransaction;
-            use sp_runtime::traits::IdentifyAccount;
-            use sp_runtime::RuntimeAppPublic;
-
             // Get the list of charger accounts
             let accounts =
                 <T::AutorityId as AppCrypto<T::Public, T::Signature>>::RuntimeAppPublic::all()
@@ -210,55 +223,80 @@ pub mod pallet {
                             T::Signature,
                         >>::GenericPublic::from(key);
                         let public: T::Public = generic_public.into();
-                        public.clone().into_account()
+                        let signer = Signer::<T, T::AutorityId>::all_accounts()
+                            .with_filter(sp_std::vec!(public.clone()));
+                        (public.clone().into_account(), signer)
                     });
 
-            // For each charger account registered in the keystore...
-            for account in accounts {
-                debug::native::debug!("Use charger account {}", account);
+            // For each charger account registered in the keystore:
+            for (account_id, signer) in accounts {
+                debug::native::debug!("Use charger account {}", account_id);
 
-                // Check if pending user request exists for this charger
-                match Self::user_requests(account.clone()) {
+                // 1) Check if pending user request exists for this charger
+                match Self::user_requests(&account_id) {
                     Some(request) => {
-                        debug::native::debug!("User {} requested a charger", &request.user_id);
+                        debug::native::debug!(
+                            "User {} requests a new charge session",
+                            &request.user_id
+                        );
                         if charger_api::start_charge() {
                             debug::native::info!(
                                 "Charge session started for user {}",
                                 &request.user_id
                             );
-                            // TODO: don't use any_accounts but account
-                            let signer = Signer::<T, T::AutorityId>::any_account();
-                            // TODO handle _result
-                            let _result = signer.send_signed_transaction(|_acct| {
-                                Call::start_session(request.user_id.clone())
-                            });
+                            if Self::send_signed_transaction(
+                                &signer,
+                                Call::start_session(request.user_id.clone()),
+                            )
+                            .is_err()
+                            {
+                                debug::native::error!(
+                                    "Error occured while sending start_session transaction"
+                                );
+                            }
                         }
                     }
                     _ => {}
                 }
 
-                // Check if there is an active charge session for this charger
-                match Self::active_sessions(account.clone()) {
+                // 2) Check if there is an active charge session for this charger
+                match Self::active_sessions(&account_id) {
                     Some(session) => {
                         // We have an active session, check the current status
-                        if charger_api::get_current_charge_status() {
-                            debug::native::debug!("Charge session is still active, waiting...");
-                        } else {
-                            // Charge session is ended
-                            debug::native::info!(
-                                "Charge session is ended for user {}",
-                                &session.user_id
-                            );
-                            // TODO: don't use any_accounts but account
-                            let signer = Signer::<T, T::AutorityId>::any_account();
-                            // TODO handle _result
-                            let _result = signer.send_signed_transaction(|_acct| {
-                                Call::end_session(session.user_id.clone())
-                            });
+                        match charger_api::get_current_charge_status() {
+                            ChargeStatus::NoCharge => {
+                                debug::native::error!("Charge session is active in-chain, but not found off-chain");
+                            },
+                            ChargeStatus::Active => {
+                                debug::native::debug!("Charge session is still active, waiting...");
+                            },
+                            ChargeStatus::Ended{ kwh } => {
+                                debug::native::info!("Charge session is ended for user {}, consumed: {} kwh", &session.user_id, &kwh);
+                                if Self::send_signed_transaction(
+                                    &signer,
+                                    Call::end_session(session.user_id.clone(), kwh),
+                                )
+                                .is_err()
+                                {
+                                    debug::native::error!(
+                                        "Error occured while sending end_session transaction"
+                                    );
+                                }
+                            }
                         }
                     }
                     _ => {}
                 }
+            }
+        }
+
+        fn send_signed_transaction(
+            signer: &Signer<T, T::AutorityId, frame_system::offchain::ForAll>,
+            call: Call<T>,
+        ) -> Result<(), ()> {
+            match signer.send_signed_transaction(|_| call.clone()).as_slice() {
+                [(_, result)] => *result,
+                _ => Err(()),
             }
         }
     }

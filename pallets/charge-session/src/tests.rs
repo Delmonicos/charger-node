@@ -135,35 +135,6 @@ fn should_create_new_request() {
 }
 
 #[test]
-fn should_replace_existing_request() {
-    new_test_ext().execute_with(|| {
-        let user_1 = Public::from_raw(hex!(
-            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
-        ));
-        let user_2 = Public::from_raw(hex!(
-            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
-        ));
-        let charger = Public::from_raw(hex!(
-            "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
-        ));
-
-        Timestamp::set_timestamp(999);
-        assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
-
-        let current_request = ChargeSession::user_requests(charger).unwrap();
-        assert_eq!(current_request.user_id, user_1);
-        assert_eq!(current_request.created_at, 999);
-
-        Timestamp::set_timestamp(1000);
-        assert_ok!(ChargeSession::new_request(Origin::signed(user_2), charger));
-
-        let current_request = ChargeSession::user_requests(charger).unwrap();
-        assert_eq!(current_request.user_id, user_2);
-        assert_eq!(current_request.created_at, 1000);
-    });
-}
-
-#[test]
 fn should_start_a_new_session() {
     new_test_ext().execute_with(|| {
         let user = Public::from_raw(hex!(
@@ -257,7 +228,7 @@ fn should_end_an_active_session() {
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user));
-        assert_ok!(ChargeSession::end_session(Origin::signed(charger), user));
+        assert_ok!(ChargeSession::end_session(Origin::signed(charger), user, 99));
 
         assert!(ChargeSession::active_sessions(charger).is_none());
     });
@@ -282,10 +253,76 @@ fn should_not_end_a_session_from_another_charger() {
             user
         ));
         assert_err!(
-            ChargeSession::end_session(Origin::signed(charger_2), user,),
+            ChargeSession::end_session(Origin::signed(charger_2), user, 99),
             pallet_charge_session::Error::<Test>::NoChargingSession
         );
 
         assert!(ChargeSession::active_sessions(charger_1).is_some());
+    });
+}
+
+#[test]
+fn should_reject_new_request_if_request_already_exists() {
+    new_test_ext().execute_with(|| {
+        let user_1 = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+        let user_2 = Public::from_raw(hex!(
+            "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
+        ));
+        let charger= Public::from_raw(hex!(
+            "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
+        ));
+
+        assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
+        assert_err!(
+            ChargeSession::new_request(Origin::signed(user_2), charger),
+            pallet_charge_session::Error::<Test>::ChargerIsBusy
+        );
+    });
+}
+
+#[test]
+fn should_reject_new_request_if_charge_is_active() {
+    new_test_ext().execute_with(|| {
+        let user_1 = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+        let user_2 = Public::from_raw(hex!(
+            "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
+        ));
+        let charger= Public::from_raw(hex!(
+            "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
+        ));
+
+        assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
+        assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_1));
+        assert_err!(
+            ChargeSession::new_request(Origin::signed(user_2), charger),
+            pallet_charge_session::Error::<Test>::ChargerIsBusy
+        );
+    });
+}
+
+#[test]
+fn should_chain_two_sessions() {
+    new_test_ext().execute_with(|| {
+        let user_1 = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+        let user_2 = Public::from_raw(hex!(
+            "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
+        ));
+        let charger= Public::from_raw(hex!(
+            "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
+        ));
+
+        assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
+        assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_1));
+        assert_ok!(ChargeSession::end_session(Origin::signed(charger), user_1, 99));
+
+        assert_ok!(ChargeSession::new_request(Origin::signed(user_2), charger));
+        assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_2));
+        assert_ok!(ChargeSession::end_session(Origin::signed(charger), user_2, 99));
     });
 }

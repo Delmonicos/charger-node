@@ -22,6 +22,7 @@ pallet-timestamp = { default-features = false, version = '3.0.0' }
 charger-service = { path = '../../charger-service', default-features = false }
 sp-runtime = { default-features = false, version = '3.0.0' }
 sp-core = { default-features = false, version = '3.0.0' }
+sp-std = { default-features = false, version = '3.0.0' }
 
 [dev-dependencies]
 serde = { version = "1.0.119" }
