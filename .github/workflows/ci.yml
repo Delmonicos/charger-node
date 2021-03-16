@@ -1,4 +1,7 @@
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 name: CI
 
@@ -22,3 +25,7 @@ jobs:
         with:
           command: build
           args: --release
+      - uses: actions/upload-artifact@v2
+        with:
+          name: charger-node
+          path: target/release/charger-node

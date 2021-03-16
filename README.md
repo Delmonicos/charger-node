@@ -1,5 +1,7 @@
 # Delmonicos
 
+[![CI](https://github.com/Delmonicos/charger-node/actions/workflows/ci.yml/badge.svg)](https://github.com/Delmonicos/charger-node/actions/workflows/ci.yml)
+
 ## Project Overview
 
 ### Overview

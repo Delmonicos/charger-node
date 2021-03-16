@@ -1,7 +1,8 @@
 use crate as pallet_charge_session;
 
+use hex_literal::hex;
 use frame_support::{assert_err, assert_ok};
-use sp_core::{sr25519::Signature, H256};
+use sp_core::{sr25519::{Signature, Public}, H256};
 use sp_io::TestExternalities;
 use sp_runtime::{
     testing::{Header, TestXt},
@@ -10,13 +11,6 @@ use sp_runtime::{
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
-
-pub fn new_test_ext() -> TestExternalities {
-    frame_system::GenesisConfig::default()
-        .build_storage::<Test>()
-        .unwrap()
-        .into()
-}
 
 frame_support::construct_runtime!(
   pub enum Test where
@@ -27,6 +21,8 @@ frame_support::construct_runtime!(
     System: frame_system::{Module, Call, Config, Storage, Event<T>},
     Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
     ChargeSession: pallet_charge_session::{Module, Call, Storage, Event<T>},
+    DID: pallet_did::{Module, Call, Storage, Event<T>},
+    Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
   }
 );
 
@@ -51,7 +47,6 @@ impl frame_system::Config for Test {
     type Call = Call;
     type Hash = H256;
     type Hashing = BlakeTwo256;
-    //type AccountId = u64;
     type AccountId = sp_core::sr25519::Public;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Header = Header;
@@ -73,9 +68,25 @@ impl pallet_timestamp::Config for Test {
     type WeightInfo = ();
 }
 
+impl pallet_registrar::Config for Test {
+    type Event = Event;
+}
+
+impl pallet_did::Config for Test {
+    type Event = Event;
+    type Public = <Signature as Verify>::Signer;
+    type Signature = Signature;
+    type Time = Timestamp;
+}
+
+frame_support::parameter_types! {
+    pub ChargerOrganization: AccountId = Public::from_raw(hex!("fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"));
+  }
+
 impl pallet_charge_session::Config for Test {
     type Event = Event;
-    type AutorityId = pallet_charge_session::crypto::ChargerId;
+    type AuthorityId = pallet_charge_session::crypto::ChargerId;
+    type ChargerOrganization = ChargerOrganization;
 }
 
 impl frame_system::offchain::SigningTypes for Test {
@@ -108,8 +119,20 @@ where
     }
 }
 
-use hex_literal::hex;
-use sp_core::sr25519::Public;
+pub fn new_test_ext() -> TestExternalities {
+    frame_system::GenesisConfig::default()
+        .build_storage::<Test>()
+        .unwrap()
+        .into()
+}
+
+pub fn register_charger(charger: Public) {
+    let org_owner = Public::from_raw(hex!("fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"));
+    if Registrar::organizations().contains(&org_owner) == false {
+        assert_ok!(Registrar::create_organization(Origin::signed(org_owner), "chargers".as_bytes().to_vec()));
+    }
+    assert_ok!(Registrar::add_to_organization(Origin::signed(org_owner), charger));
+}
 
 #[test]
 fn should_create_new_request() {
@@ -120,6 +143,7 @@ fn should_create_new_request() {
         let charger = Public::from_raw(hex!(
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
+        register_charger(charger);
 
         Timestamp::set_timestamp(999);
 
@@ -143,6 +167,7 @@ fn should_start_a_new_session() {
         let charger = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
+        register_charger(charger);
 
         Timestamp::set_timestamp(999);
         assert!(ChargeSession::active_sessions(charger).is_none());
@@ -167,6 +192,7 @@ fn should_not_start_unrequested_session() {
         let charger = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
+        register_charger(charger);
 
         assert_err!(
             ChargeSession::start_session(Origin::signed(charger), user),
@@ -185,6 +211,7 @@ fn should_not_start_twice() {
         let charger = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
+        register_charger(charger);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user));
@@ -207,6 +234,8 @@ fn should_not_take_request_from_another_charger() {
         let charger_2 = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
+        register_charger(charger_1);
+        register_charger(charger_2);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger_2));
         assert_err!(
@@ -225,6 +254,7 @@ fn should_end_an_active_session() {
         let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
+        register_charger(charger);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user));
@@ -246,6 +276,8 @@ fn should_not_end_a_session_from_another_charger() {
         let charger_2 = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
+        register_charger(charger_1);
+        register_charger(charger_2);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger_1));
         assert_ok!(ChargeSession::start_session(
@@ -273,6 +305,7 @@ fn should_reject_new_request_if_request_already_exists() {
         let charger= Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
+        register_charger(charger);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
         assert_err!(
@@ -294,6 +327,7 @@ fn should_reject_new_request_if_charge_is_active() {
         let charger= Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
+        register_charger(charger);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_1));
@@ -316,6 +350,7 @@ fn should_chain_two_sessions() {
         let charger= Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
+        register_charger(charger);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_1));
@@ -324,5 +359,53 @@ fn should_chain_two_sessions() {
         assert_ok!(ChargeSession::new_request(Origin::signed(user_2), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_2));
         assert_ok!(ChargeSession::end_session(Origin::signed(charger), user_2, 99));
+    });
+}
+
+#[test]
+fn should_reject_new_request_for_unregistered_charger() {
+    new_test_ext().execute_with(|| {
+        let user = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+        let charger = Public::from_raw(hex!(
+            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
+        ));
+        assert_err!(
+            ChargeSession::new_request(Origin::signed(user), charger),
+            pallet_charge_session::Error::<Test>::NotRegisteredCharger
+        );
+    });
+}
+
+#[test]
+fn should_reject_start_session_for_unregistered_charger() {
+    new_test_ext().execute_with(|| {
+        let user = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+        let charger = Public::from_raw(hex!(
+            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
+        ));
+        assert_err!(
+            ChargeSession::start_session(Origin::signed(charger), user),
+            pallet_charge_session::Error::<Test>::NotRegisteredCharger
+        );
+    });
+}
+
+#[test]
+fn should_reject_end_session_for_unregistered_charger() {
+    new_test_ext().execute_with(|| {
+        let user = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+        let charger = Public::from_raw(hex!(
+            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
+        ));
+        assert_err!(
+            ChargeSession::end_session(Origin::signed(charger), user, 99),
+            pallet_charge_session::Error::<Test>::NotRegisteredCharger
+        );
     });
 }

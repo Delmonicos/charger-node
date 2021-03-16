@@ -1,12 +1,18 @@
 # Development setup for charger offchain worker
 
-## Generate a new charger key
+## Accounts
+
+### Generate charger account
 
 Use [subkey](https://substrate.dev/docs/en/knowledgebase/integrate/subkey) to generate a new keypair:
 
 ```
 subkey generate
 ```
+### Charger organization
+
+By default, Alice account is configurated as Organization Owner for chargers.
+Create a new Organization using the Registar pallet with Alice account, and add the account generated at previous step as a member of this organization.
 
 ## Start the substrate node
 
@@ -18,14 +24,14 @@ cargo run -- -lpallet_charge_session=debug,charger_service=debug --dev
 
 ## Transfer units to charger account
 
-With the substrate node running, make a transfer of 1000000000000 units to Account ID of the charger (output of the `subkey generate` command).
+With the substrate node running, make a transfer of 1 unit to Account ID of the charger (output of the `subkey generate` command).
 
 ## Register the charger account in the keystore
 
 ```
 curl -X POST 'localhost:9933' \
   --header 'Content-Type: application/json' \
-  --data-raw '{c
+  --data-raw '{
       "jsonrpc":"2.0",
       "id":1,
       "method":"author_insertKey",
