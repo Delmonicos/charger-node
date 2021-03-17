@@ -11,6 +11,7 @@ use sp_consensus_aura::sr25519::AuthorityPair as AuraPair;
 use sp_inherents::InherentDataProviders;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
+use hex_literal::hex;
 
 use charger_service::runtime::externalities::ChargerExt;
 
@@ -214,6 +215,13 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
             crate::rpc::create_full(deps)
         })
     };
+
+    if config.dev_key_seed.is_some() {
+        log::info!("Loading dev charger keystore");
+        let keystore = keystore_container.sync_keystore();
+        let key_type = sp_core::crypto::KeyTypeId(*b"chrg");
+        sp_keystore::SyncCryptoStore::insert_unknown(&*keystore, key_type, "//Bob", &hex!("8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48")).expect("cannot insert charger key");
+    }
 
     let (_rpc_handlers, telemetry_connection_notifier) =
         sc_service::spawn_tasks(sc_service::SpawnTasksParams {

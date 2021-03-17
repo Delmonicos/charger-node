@@ -1,5 +1,9 @@
 # Development setup for charger offchain worker
 
+By default, **Alice** account is automatically configured as the 'Chargers' organization owner, and **Bob** account is configured as a charger, the key is loaded into the keystore and addedd to the 'Chargers' organization.
+
+The following steps allow you to configure the charger account manually.
+
 ## Accounts
 
 ### Generate charger account
