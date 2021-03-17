@@ -1,5 +1,5 @@
-use sp_externalities::ExternalitiesExt;
 use codec::{Decode, Encode};
+use sp_externalities::ExternalitiesExt;
 use sp_runtime_interface::pass_by::PassByCodec;
 
 #[cfg(feature = "std")]
@@ -9,7 +9,7 @@ use super::externalities::ChargerExt;
 pub enum ChargeStatus {
     NoCharge,
     Active,
-    Ended { kwh: u64 }
+    Ended { kwh: u64 },
 }
 
 #[sp_runtime_interface::runtime_interface]

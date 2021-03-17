@@ -1,8 +1,11 @@
 use crate as pallet_charge_session;
 
+use frame_support::{assert_err, assert_ok, traits::GenesisBuild};
 use hex_literal::hex;
-use frame_support::{assert_err, assert_ok};
-use sp_core::{sr25519::{Signature, Public}, H256};
+use sp_core::{
+    sr25519::{Public, Signature},
+    H256,
+};
 use sp_io::TestExternalities;
 use sp_runtime::{
     testing::{Header, TestXt},
@@ -79,14 +82,9 @@ impl pallet_did::Config for Test {
     type Time = Timestamp;
 }
 
-frame_support::parameter_types! {
-    pub ChargerOrganization: AccountId = Public::from_raw(hex!("fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"));
-  }
-
 impl pallet_charge_session::Config for Test {
     type Event = Event;
     type AuthorityId = pallet_charge_session::crypto::ChargerId;
-    type ChargerOrganization = ChargerOrganization;
 }
 
 impl frame_system::offchain::SigningTypes for Test {
@@ -120,18 +118,33 @@ where
 }
 
 pub fn new_test_ext() -> TestExternalities {
-    frame_system::GenesisConfig::default()
+    let mut storage = frame_system::GenesisConfig::default()
         .build_storage::<Test>()
-        .unwrap()
-        .into()
+        .unwrap();
+    pallet_charge_session::GenesisConfig::<Test> {
+        organization_account: Public::from_raw(hex!(
+            "fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"
+        )),
+    }
+    .assimilate_storage(&mut storage)
+    .unwrap();
+    storage.into()
 }
 
 pub fn register_charger(charger: Public) {
-    let org_owner = Public::from_raw(hex!("fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"));
+    let org_owner = Public::from_raw(hex!(
+        "fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"
+    ));
     if Registrar::organizations().contains(&org_owner) == false {
-        assert_ok!(Registrar::create_organization(Origin::signed(org_owner), "chargers".as_bytes().to_vec()));
+        assert_ok!(Registrar::create_organization(
+            Origin::signed(org_owner),
+            "chargers".as_bytes().to_vec()
+        ));
     }
-    assert_ok!(Registrar::add_to_organization(Origin::signed(org_owner), charger));
+    assert_ok!(Registrar::add_to_organization(
+        Origin::signed(org_owner),
+        charger
+    ));
 }
 
 #[test]
@@ -258,7 +271,11 @@ fn should_end_an_active_session() {
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user));
-        assert_ok!(ChargeSession::end_session(Origin::signed(charger), user, 99));
+        assert_ok!(ChargeSession::end_session(
+            Origin::signed(charger),
+            user,
+            99
+        ));
 
         assert!(ChargeSession::active_sessions(charger).is_none());
     });
@@ -302,7 +319,7 @@ fn should_reject_new_request_if_request_already_exists() {
         let user_2 = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
-        let charger= Public::from_raw(hex!(
+        let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
         register_charger(charger);
@@ -324,13 +341,16 @@ fn should_reject_new_request_if_charge_is_active() {
         let user_2 = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
-        let charger= Public::from_raw(hex!(
+        let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
         register_charger(charger);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
-        assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_1));
+        assert_ok!(ChargeSession::start_session(
+            Origin::signed(charger),
+            user_1
+        ));
         assert_err!(
             ChargeSession::new_request(Origin::signed(user_2), charger),
             pallet_charge_session::Error::<Test>::ChargerIsBusy
@@ -347,18 +367,32 @@ fn should_chain_two_sessions() {
         let user_2 = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
-        let charger= Public::from_raw(hex!(
+        let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
         register_charger(charger);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
-        assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_1));
-        assert_ok!(ChargeSession::end_session(Origin::signed(charger), user_1, 99));
+        assert_ok!(ChargeSession::start_session(
+            Origin::signed(charger),
+            user_1
+        ));
+        assert_ok!(ChargeSession::end_session(
+            Origin::signed(charger),
+            user_1,
+            99
+        ));
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_2), charger));
-        assert_ok!(ChargeSession::start_session(Origin::signed(charger), user_2));
-        assert_ok!(ChargeSession::end_session(Origin::signed(charger), user_2, 99));
+        assert_ok!(ChargeSession::start_session(
+            Origin::signed(charger),
+            user_2
+        ));
+        assert_ok!(ChargeSession::end_session(
+            Origin::signed(charger),
+            user_2,
+            99
+        ));
     });
 }
 

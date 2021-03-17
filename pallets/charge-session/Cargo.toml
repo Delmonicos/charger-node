@@ -24,9 +24,9 @@ charger-service = { path = '../../charger-service', default-features = false }
 sp-runtime = { default-features = false, version = '3.0.0' }
 sp-core = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = '3.0.0' }
+serde = { default-features = false, version = "1.0.119" }
 
 [dev-dependencies]
-serde = { version = "1.0.119" }
 sp-io = { default-features = false, version = '3.0.0' }
 hex-literal = "0.3.1"
 pallet-did = { git = 'https://github.com/Delmonicos/pallet-did', default-features = false}

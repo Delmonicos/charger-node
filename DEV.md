@@ -12,7 +12,6 @@ subkey generate
 ### Charger organization
 
 By default, Alice account is configurated as Organization Owner for chargers.
-Create a new Organization using the Registar pallet with Alice account, and add the account generated at previous step as a member of this organization.
 
 ## Start the substrate node
 
@@ -25,6 +24,10 @@ cargo run -- -lpallet_charge_session=debug,charger_service=debug --dev
 ## Transfer units to charger account
 
 With the substrate node running, make a transfer of 1 unit to Account ID of the charger (output of the `subkey generate` command).
+
+## Add the charger account to the chargeur organization
+
+Using Alice account, add the Account Id of the charger in the Alice's organization
 
 ## Register the charger account in the keystore
 

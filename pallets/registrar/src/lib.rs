@@ -4,9 +4,8 @@ use frame_support::{
     decl_error, decl_event, decl_module, decl_storage, dispatch, ensure, traits::EnsureOrigin,
 };
 use frame_system::{self as system, ensure_signed, RawOrigin};
-use sp_std::{if_std, prelude::*, vec::Vec};
 use pallet_did::did::Did;
-
+use sp_std::{if_std, prelude::*, vec::Vec};
 
 pub trait Config: frame_system::Config + pallet_did::Config {
     type Event: From<Event<Self>> + Into<<Self as frame_system::Config>::Event>;
@@ -135,7 +134,13 @@ impl<T: Config> Module<T> {
         }
 
         // Add account as a DID delegate.
-		<pallet_did::Module<T>>::create_delegate(&org, &org, &account, &b"OrgMember".to_vec(), None)?;
+        <pallet_did::Module<T>>::create_delegate(
+            &org,
+            &org,
+            &account,
+            &b"OrgMember".to_vec(),
+            None,
+        )?;
         Ok(())
     }
 
@@ -143,7 +148,9 @@ impl<T: Config> Module<T> {
     pub fn part_of_organization(account: &T::AccountId) -> bool {
         let orgs = <Module<T>>::organizations();
         for org in orgs.iter() {
-            if <pallet_did::Module<T>>::valid_delegate(org, &b"OrgMember".to_vec(), &account).is_ok() {
+            if <pallet_did::Module<T>>::valid_delegate(org, &b"OrgMember".to_vec(), &account)
+                .is_ok()
+            {
                 return true;
             }
         }
