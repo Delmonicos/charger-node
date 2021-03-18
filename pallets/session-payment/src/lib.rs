@@ -1,5 +1,8 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+#[cfg(test)]
+mod tests;
+
 use codec::{Decode, Encode};
 
 use pallet_timestamp as timestamp;

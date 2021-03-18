@@ -3976,8 +3976,10 @@ dependencies = [
 name = "pallet-session-payment"
 version = "1.0.0"
 dependencies = [
+ "charger-service",
  "frame-support",
  "frame-system",
+ "hex-literal",
  "pallet-timestamp",
  "parity-scale-codec",
  "serde",
