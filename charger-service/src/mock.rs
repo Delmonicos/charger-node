@@ -1,15 +1,17 @@
 use anyhow::{anyhow, Result};
 use log::{debug, info};
-use std::{ops::Add, time::{Duration, Instant}};
 use rand::prelude::*;
-
+use std::{
+    ops::Add,
+    time::{Duration, Instant},
+};
 
 use crate::api::*;
 
 pub struct MockCharger {
     current_session_end_timestamp: Option<Instant>,
     min_time: u64,
-    max_time: u64
+    max_time: u64,
 }
 
 impl MockCharger {
@@ -17,7 +19,7 @@ impl MockCharger {
         MockCharger {
             current_session_end_timestamp: None,
             min_time: 20,
-            max_time: 60
+            max_time: 60,
         }
     }
 }
@@ -28,7 +30,9 @@ impl ChargerApi for MockCharger {
             return Err(anyhow!("This charger already has an active session"));
         }
         let mut rng = rand::thread_rng();
-        let end_at = std::time::Instant::now().add(Duration::from_secs(rng.gen_range(self.min_time..self.max_time)));
+        let end_at = std::time::Instant::now().add(Duration::from_secs(
+            rng.gen_range(self.min_time..self.max_time),
+        ));
         debug!("New charge session started, end at {:?}", end_at);
         self.current_session_end_timestamp = Some(end_at);
         Ok(())
@@ -38,9 +42,7 @@ impl ChargerApi for MockCharger {
         debug!("Get charge status");
         let status = match self.current_session_end_timestamp {
             None => ChargeStatus::NotFound,
-            Some(end_at)
-                if Instant::now() > end_at =>
-            {
+            Some(end_at) if Instant::now() > end_at => {
                 self.current_session_end_timestamp = None;
                 let mut rng = rand::thread_rng();
                 let kwh = rng.gen_range(100..5000);
@@ -80,7 +82,11 @@ mod test {
 
     #[test]
     fn should_end_session() {
-        let mut charger_api = MockCharger{ current_session_end_timestamp: None, min_time: 1, max_time: 2 };
+        let mut charger_api = MockCharger {
+            current_session_end_timestamp: None,
+            min_time: 1,
+            max_time: 2,
+        };
 
         // Start new charge
         charger_api

@@ -1,9 +1,9 @@
+use crate::runtime::offchain;
 use crate::{
     api::{ChargeStatus, ChargerApi},
     mock::MockCharger,
 };
 use std::sync::{Arc, Mutex};
-use crate::runtime::offchain;
 
 pub trait Externalities: Send {
     fn start_charge(&mut self) -> bool;

@@ -1,6 +1,6 @@
 use charger_node_runtime::{
-    AccountId, AuraConfig, BalancesConfig, ContractsConfig, GenesisConfig, GrandpaConfig,
-    Signature, SudoConfig, SystemConfig, WASM_BINARY,
+    AccountId, AuraConfig, BalancesConfig, ChargeSessionConfig, ContractsConfig, GenesisConfig,
+    GrandpaConfig, RegistrarConfig, Signature, SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -61,6 +61,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
                 ],
                 true,
+                get_account_id_from_seed::<sr25519::Public>("Alice"),
             )
         },
         // Bootnodes
@@ -112,6 +113,7 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
                 ],
                 true,
+                get_account_id_from_seed::<sr25519::Public>("Alice"),
             )
         },
         // Bootnodes
@@ -134,6 +136,7 @@ fn testnet_genesis(
     root_key: AccountId,
     endowed_accounts: Vec<AccountId>,
     enable_println: bool,
+    charger_organization_account: AccountId,
 ) -> GenesisConfig {
     GenesisConfig {
         frame_system: Some(SystemConfig {
@@ -167,6 +170,13 @@ fn testnet_genesis(
                 enable_println,
                 ..Default::default()
             },
+        }),
+        pallet_charge_session: Some(ChargeSessionConfig {
+            organization_account: charger_organization_account.clone(),
+        }),
+        pallet_registrar: Some(RegistrarConfig {
+            orgs: vec![(charger_organization_account.clone(), "chargers".as_bytes().to_vec())],
+            members: vec![(charger_organization_account, vec![get_account_id_from_seed::<sr25519::Public>("Bob")])],
         }),
     }
 }

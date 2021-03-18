@@ -2,24 +2,13 @@
 
 use codec::{Decode, Encode};
 
+use pallet_registrar as registrar;
 use pallet_timestamp as timestamp;
 
 #[cfg(test)]
 mod tests;
 
 use charger_service::runtime::offchain::{api as charger_api, ChargeStatus};
-
-#[derive(Debug, PartialEq, Default, Encode, Decode)]
-pub struct ChargeRequest<UserId, Moment> {
-    user_id: UserId,
-    created_at: Moment,
-}
-
-#[derive(Debug, PartialEq, Default, Encode, Decode)]
-pub struct ChargingSession<UserId, Moment> {
-    user_id: UserId,
-    started_at: Moment,
-}
 
 pub mod crypto {
     use frame_system::offchain::AppCrypto;
@@ -46,6 +35,18 @@ pub mod crypto {
     }
 }
 
+#[derive(Debug, PartialEq, Default, Encode, Decode)]
+pub struct ChargeRequest<UserId, Moment> {
+    user_id: UserId,
+    created_at: Moment,
+}
+
+#[derive(Debug, PartialEq, Default, Encode, Decode)]
+pub struct ChargingSession<UserId, Moment> {
+    user_id: UserId,
+    started_at: Moment,
+}
+
 pub use pallet::*;
 
 #[frame_support::pallet]
@@ -53,17 +54,46 @@ pub mod pallet {
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::{
-        offchain::{AppCrypto, CreateSignedTransaction, SendSignedTransaction, Signer},
+        offchain::{
+            AppCrypto, CreateSignedTransaction, SendSignedTransaction, Signer, SigningTypes,
+        },
         pallet_prelude::*,
     };
     use sp_runtime::{traits::IdentifyAccount, RuntimeAppPublic};
 
+    #[pallet::genesis_config]
+    pub struct GenesisConfig<T: Config> {
+        pub organization_account: T::AccountId,
+    }
+
+    #[pallet::genesis_build]
+    impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
+        fn build(&self) {
+            <ChargerOrganization<T>>::put(&self.organization_account);
+        }
+    }
+
+    #[cfg(feature = "std")]
+    impl<T: Config> Default for GenesisConfig<T> {
+        fn default() -> Self {
+            Self {
+                organization_account: Default::default(),
+            }
+        }
+    }
+
     #[pallet::config]
     #[pallet::disable_frame_system_supertrait_check]
     pub trait Config:
-        frame_system::Config + CreateSignedTransaction<Call<Self>> + timestamp::Config
+        frame_system::Config
+        + CreateSignedTransaction<Call<Self>>
+        + registrar::Config
+        + timestamp::Config
     {
-        type AutorityId: AppCrypto<Self::Public, Self::Signature>;
+        type AuthorityId: AppCrypto<
+            <Self as SigningTypes>::Public,
+            <Self as SigningTypes>::Signature,
+        >;
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
     }
 
@@ -81,8 +111,10 @@ pub mod pallet {
     pub type ActiveSessions<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, ChargingSession<T::AccountId, T::Moment>>;
 
+    #[pallet::storage]
+    pub type ChargerOrganization<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
+
     #[pallet::event]
-    //#[pallet::metadata(T::AccountId = "AccountId", T::Moment = "Timestamp")]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         /// SessionRequested(User, Charger, Timestamp)
@@ -95,6 +127,7 @@ pub mod pallet {
 
     #[pallet::error]
     pub enum Error<T> {
+        NotRegisteredCharger,
         NoChargingRequest,
         NoChargingSession,
         ChargerIsBusy,
@@ -116,24 +149,34 @@ pub mod pallet {
             charger: T::AccountId,
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
+            ensure!(Self::is_charger(&charger), Error::<T>::NotRegisteredCharger);
+
             let now = <timestamp::Module<T>>::get();
 
             // Check that this charger does not have another pending request
             // TODO: expiration period for request?
             match UserRequests::<T>::get(&charger) {
                 Some(request) => {
-                    debug::native::warn!("Charger {} has pending request {:?}: cannot store a new request", &charger, &request);
+                    debug::native::warn!(
+                        "Charger {} has pending request {:?}: cannot store a new request",
+                        &charger,
+                        &request
+                    );
                     return Err(Error::<T>::ChargerIsBusy.into());
-                },
+                }
                 _ => {}
             }
 
             // Check that this charger does not have an active charging session
             match ActiveSessions::<T>::get(&charger) {
                 Some(session) => {
-                    debug::native::warn!("Charger {} has already active session {:?}: cannot store a new request", &charger, &session);
+                    debug::native::warn!(
+                        "Charger {} has already active session {:?}: cannot store a new request",
+                        &charger,
+                        &session
+                    );
                     return Err(Error::<T>::ChargerIsBusy.into());
-                },
+                }
                 _ => {}
             }
 
@@ -157,6 +200,8 @@ pub mod pallet {
             user: T::AccountId,
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
+            ensure!(Self::is_charger(&sender), Error::<T>::NotRegisteredCharger);
+
             let now = <timestamp::Module<T>>::get();
 
             // Validate that a request exists for this user & charger
@@ -188,8 +233,14 @@ pub mod pallet {
         }
 
         #[pallet::weight(1_000)]
-        pub fn end_session(origin: OriginFor<T>, user: T::AccountId, kwh: u64) -> DispatchResultWithPostInfo {
+        pub fn end_session(
+            origin: OriginFor<T>,
+            user: T::AccountId,
+            kwh: u64,
+        ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
+            ensure!(Self::is_charger(&sender), Error::<T>::NotRegisteredCharger);
+
             let now = <timestamp::Module<T>>::get();
 
             // Validate that a session exists for this user & charger
@@ -214,19 +265,21 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         fn process_charge_sessions() {
             // Get the list of charger accounts
-            let accounts =
-                <T::AutorityId as AppCrypto<T::Public, T::Signature>>::RuntimeAppPublic::all()
-                    .into_iter()
-                    .map(|key| {
-                        let generic_public = <T::AutorityId as AppCrypto<
-                            T::Public,
-                            T::Signature,
-                        >>::GenericPublic::from(key);
-                        let public: T::Public = generic_public.into();
-                        let signer = Signer::<T, T::AutorityId>::all_accounts()
-                            .with_filter(sp_std::vec!(public.clone()));
-                        (public.clone().into_account(), signer)
-                    });
+            let accounts = <T::AuthorityId as AppCrypto<
+                <T as SigningTypes>::Public,
+                <T as SigningTypes>::Signature,
+            >>::RuntimeAppPublic::all()
+            .into_iter()
+            .map(|key| {
+                let generic_public = <T::AuthorityId as AppCrypto<
+                    <T as SigningTypes>::Public,
+                    <T as SigningTypes>::Signature,
+                >>::GenericPublic::from(key);
+                let public: <T as SigningTypes>::Public = generic_public.into();
+                let signer = Signer::<T, T::AuthorityId>::all_accounts()
+                    .with_filter(sp_std::vec!(public.clone()));
+                (public.clone().into_account(), signer)
+            });
 
             // For each charger account registered in the keystore:
             for (account_id, signer) in accounts {
@@ -265,13 +318,19 @@ pub mod pallet {
                         // We have an active session, check the current status
                         match charger_api::get_current_charge_status() {
                             ChargeStatus::NoCharge => {
-                                debug::native::error!("Charge session is active in-chain, but not found off-chain");
-                            },
+                                debug::native::error!(
+                                    "Charge session is active in-chain, but not found off-chain"
+                                );
+                            }
                             ChargeStatus::Active => {
                                 debug::native::debug!("Charge session is still active, waiting...");
-                            },
-                            ChargeStatus::Ended{ kwh } => {
-                                debug::native::info!("Charge session is ended for user {}, consumed: {} kwh", &session.user_id, &kwh);
+                            }
+                            ChargeStatus::Ended { kwh } => {
+                                debug::native::info!(
+                                    "Charge session is ended for user {}, consumed: {} kwh",
+                                    &session.user_id,
+                                    &kwh
+                                );
                                 if Self::send_signed_transaction(
                                     &signer,
                                     Call::end_session(session.user_id.clone(), kwh),
@@ -290,8 +349,13 @@ pub mod pallet {
             }
         }
 
+        fn is_charger(who: &T::AccountId) -> bool {
+            return <pallet_registrar::Module<T>>::members_of(<ChargerOrganization<T>>::get())
+                .contains(who);
+        }
+
         fn send_signed_transaction(
-            signer: &Signer<T, T::AutorityId, frame_system::offchain::ForAll>,
+            signer: &Signer<T, T::AuthorityId, frame_system::offchain::ForAll>,
             call: Call<T>,
         ) -> Result<(), ()> {
             match signer.send_signed_transaction(|_| call.clone()).as_slice() {
