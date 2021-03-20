@@ -11,36 +11,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: uname -a
-      - name: checkout
+      - name: Checkout sources
         uses: actions/checkout@v2
-      - name: install stable toolchain
+      - name: Install Rust stable toolchain
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: install nightly toolchain and wasm32 target
+      - name: Install Rust nightly toolchain and wasm32 target
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
           target: wasm32-unknown-unknown
-      #- name: run tests
+      - name: Install Rust nightly toolchain and aarch64 target
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: aarch64-unknown-linux-gnu
+      #- name: Run unit tests
       #  uses: actions-rs/cargo@v1
       #  with:
       #    command: test
-      - name: build aarch64 release
+      #- name: Build Linux x86_64 release
+      #  uses: actions-rs/cargo@v1
+      #  with:
+      #    command: build
+      #    args: --release
+      - name: Build Linux aarch64 release
         uses: actions-rs/cargo@v1
         with:
           use-cross: true
           command: build
           args: --release --target aarch64-unknown-linux-gnu
-      #- name: build x86_64 release
-      #  uses: actions-rs/cargo@v1
-      #  with:
-      #    command: build
-      #    args: --release
       - run: ls -altr target/
       - run: ls -altr target/release
-      #- name: upload artifact
+      #- name: Upload x86_64 binary
       #  uses: actions/upload-artifact@v2
       #  with:
-      #    name: charger-node
+      #    name: charger-node_x86_64-linux
+      #    path: target/
+      #- name: Upload aarch64 binary
+      #  uses: actions/upload-artifact@v2
+      #  with:
+      #    name: charger-node_aarch64-linux
       #    path: target/
