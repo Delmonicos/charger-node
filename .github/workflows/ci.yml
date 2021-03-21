@@ -17,6 +17,8 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+      - name: Install system dependencies
+        run: sudo apt-get install -y clang
       - name: Install Rust nightly toolchain and wasm32 target
         uses: actions-rs/toolchain@v1
         with:
