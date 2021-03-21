@@ -10,9 +10,10 @@ jobs:
     name: Build and test charger-node
     runs-on: ubuntu-latest
     steps:
-      - run: uname -a
       - name: Checkout sources
         uses: actions/checkout@v2
+      - name: Install system dependencies
+        run: sudo apt-get install -y gcc-aarch64-linux-gnu llvm
       - name: Install Rust stable toolchain
         uses: actions-rs/toolchain@v1
         with:
@@ -22,8 +23,6 @@ jobs:
         with:
           toolchain: stable
           target: aarch64-unknown-linux-gnu
-      - name: Install system dependencies
-        run: sudo apt-get install -y gcc-aarch64-linux-gnu
       - name: Install Rust nightly toolchain and wasm32 target
         uses: actions-rs/toolchain@v1
         with:
@@ -34,20 +33,18 @@ jobs:
         with:
           toolchain: nightly
           target: aarch64-unknown-linux-gnu
-          #override: true
-      #- name: Run unit tests
-      #  uses: actions-rs/cargo@v1
-      #  with:
-      #    command: test
-      #- name: Build Linux x86_64 release
-      #  uses: actions-rs/cargo@v1
-      #  with:
-      #    command: build
-      #    args: --release
-      - name: Build Linux aarch64 release
+      - name: Run unit tests
         uses: actions-rs/cargo@v1
         with:
-          #use-cross: true
+          command: test
+      - name: Build linux-x86_64 release
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - name: Build linux-aarch64 release
+        uses: actions-rs/cargo@v1
+        with:
           command: build
           args: --release --target aarch64-unknown-linux-gnu
       - run: ls -altr target/
