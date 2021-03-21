@@ -17,8 +17,8 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: Install system dependencies
-        run: sudo apt-get install -y clang
+      #- name: Install system dependencies
+      #  run: sudo apt-get install -y clang
       - name: Install Rust nightly toolchain and wasm32 target
         uses: actions-rs/toolchain@v1
         with:
@@ -29,7 +29,7 @@ jobs:
         with:
           toolchain: nightly
           target: aarch64-unknown-linux-gnu
-          override: true
+          #override: true
       #- name: Run unit tests
       #  uses: actions-rs/cargo@v1
       #  with:
@@ -42,7 +42,7 @@ jobs:
       - name: Build Linux aarch64 release
         uses: actions-rs/cargo@v1
         with:
-          use-cross: true
+          #use-cross: true
           command: build
           args: --release --target aarch64-unknown-linux-gnu
       - run: ls -altr target/
