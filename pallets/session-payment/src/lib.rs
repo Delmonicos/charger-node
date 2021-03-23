@@ -93,6 +93,7 @@ pub mod pallet {
             Ok(().into())
         }
 
+
         #[pallet::weight(1_000)]
         pub fn process_payment(
             origin: OriginFor<T>,
@@ -106,7 +107,6 @@ pub mod pallet {
             let (_iban, _bic_code) = match consent {
                 None => return Err(Error::<T>::NoConsentForPayment.into()),
                 Some(consent) => (consent.iban, consent.bic_code),
-                //	_ => {},
             };
 
             // TODO: Execute payment
@@ -116,5 +116,16 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+		#[pallet::weight(1_000)]
+		pub fn is_allowed_to_pay(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+			let sender = ensure_signed(origin)?;
+			// Validate that a request exists for this user & charger
+			match UserConsents::<T>::get(&sender) {
+				None => Err(Error::<T>::NoConsentForPayment.into()),
+				Some(_consent) => Ok(().into()),
+			}
+		}
+
     }
 }

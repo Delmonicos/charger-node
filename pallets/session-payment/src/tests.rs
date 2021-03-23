@@ -111,3 +111,61 @@ use hex_literal::hex;
 use sp_core::sr25519::Public;
 
 
+#[test]
+fn should_register_new_user() {
+	new_test_ext().execute_with(|| {
+		let user = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+
+		assert_ok!(SessionPayment::new_consent(
+            Origin::signed(user),
+            Vec::from("iban1"),
+            Vec::from("bic_code1"),
+        ));
+	});
+}
+
+#[test]
+fn should_be_allowed_to_pay() {
+	new_test_ext().execute_with(|| {
+		let user = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+
+		assert_ok!(SessionPayment::new_consent(
+            Origin::signed(user),
+            Vec::from("iban1"),
+            Vec::from("bic_code1"),
+        ));
+
+		assert_ok!(SessionPayment::is_allowed_to_pay(
+            Origin::signed(user),
+        ));
+
+	});
+}
+
+#[test]
+fn should_not_be_allowed_to_pay() {
+	new_test_ext().execute_with(|| {
+		let user = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+
+		assert_ok!(SessionPayment::new_consent(
+            Origin::signed(user),
+            Vec::from("iban1"),
+            Vec::from("bic_code1"),
+        ));
+
+		let user2 = Public::from_raw(hex!(
+            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
+        ));
+
+		assert_err!(SessionPayment::is_allowed_to_pay(Origin::signed(user2)),
+			pallet_session_payment::Error::<Test>::NoConsentForPayment
+        );
+
+	});
+}
