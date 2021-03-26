@@ -739,6 +739,7 @@ dependencies = [
  "pallet-contracts",
  "pallet-contracts-rpc",
  "pallet-transaction-payment-rpc",
+ "payment-service",
  "sc-basic-authorship",
  "sc-cli",
  "sc-client-api",
@@ -4324,6 +4325,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d95a7db200b97ef370c8e6de0088252f7e0dfff7d047a28528e47456c0fc98b6"
 dependencies = [
  "proc-macro-hack",
+]
+
+[[package]]
+name = "payment-service"
+version = "1.0.0"
+dependencies = [
+ "anyhow",
+ "log",
+ "parity-scale-codec",
+ "rand 0.8.3",
+ "sp-externalities",
+ "sp-runtime-interface",
 ]
 
 [[package]]

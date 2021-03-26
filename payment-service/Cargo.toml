@@ -1,0 +1,25 @@
+[package]
+authors = ['adetante <antoine.detante@gmail.com>', 'fcroiseaux <fcroiseaux@gmail.com>']
+edition = '2018'
+license = 'Unlicense'
+name = 'payment-service'
+version = '1.0.0'
+
+[dependencies]
+anyhow = "1.0"
+log = "0.4"
+sp-externalities = { version = "0.9.0", default-features = false }
+sp-runtime-interface = { version = '3.0.0', default-features = false }
+rand = { version = '0.8', default-features = false } # Only for mock!
+
+[dependencies.codec]
+default-features = false
+features = ['derive']
+package = 'parity-scale-codec'
+version = '2.0.0'
+
+[features]
+default = ['std']
+std = [
+
+]

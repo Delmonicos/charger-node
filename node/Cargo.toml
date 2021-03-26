@@ -26,6 +26,7 @@ structopt = '0.3.8'
 # local dependencies
 charger-node-runtime = { path = '../runtime', version = '3.0.0' }
 charger-service = { path = '../charger-service', default-features = false }
+payment-service = { path = '../payment-service', default-features = false }
 
 # Substrate dependencies
 frame-benchmarking = '3.0.0'
