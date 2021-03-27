@@ -23,6 +23,7 @@ frame_support::construct_runtime!(
   {
     System: frame_system::{Module, Call, Config, Storage, Event<T>},
     Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
+    UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
     ChargeSession: pallet_charge_session::{Module, Call, Storage, Event<T>},
     DID: pallet_did::{Module, Call, Storage, Event<T>},
     Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
@@ -80,6 +81,10 @@ impl pallet_did::Config for Test {
     type Public = <Signature as Verify>::Signer;
     type Signature = Signature;
     type Time = Timestamp;
+}
+
+impl pallet_user_consent::Config for Test {
+    type Event = Event;
 }
 
 impl pallet_charge_session::Config for Test {
@@ -441,5 +446,28 @@ fn should_reject_end_session_for_unregistered_charger() {
             ChargeSession::end_session(Origin::signed(charger), user, 99),
             pallet_charge_session::Error::<Test>::NotRegisteredCharger
         );
+    });
+}
+
+#[test]
+fn should_store_user_consent() {
+    new_test_ext().execute_with(|| {
+        let user = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+        let charger = Public::from_raw(hex!(
+            "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
+        ));
+        register_charger(charger);
+
+        assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
+
+        let request = ChargeSession::user_requests(charger).expect("no user request");
+        let session_id = request.session_id;
+        
+        let consent = UserConsent::user_consent(session_id).expect("no user consent");
+
+        assert_eq!(consent.charger_id, charger);
+        assert_eq!(consent.user_id, user);
     });
 }

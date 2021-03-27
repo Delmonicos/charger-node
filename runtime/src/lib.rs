@@ -49,6 +49,9 @@ pub use pallet_charge_session;
 /// Import the session-payment pallet.
 pub use pallet_session_payment;
 
+/// The user-consent pallet
+pub use pallet_user_consent;
+
 /// An index to a block.
 pub type BlockNumber = u32;
 
@@ -332,6 +335,10 @@ impl pallet_sudo::Config for Runtime {
     type Call = Call;
 }
 
+impl pallet_user_consent::Config for Runtime {
+    type Event = Event;
+}
+
 impl pallet_charge_session::Config for Runtime {
     type Event = Event;
     type AuthorityId = pallet_charge_session::crypto::ChargerId;
@@ -428,6 +435,7 @@ construct_runtime!(
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         Contracts: pallet_contracts::{Module, Call, Config<T>, Storage, Event<T>},
+        UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
         ChargeSession: pallet_charge_session::{Module, Call, Config<T>, Storage, Event<T>},
         SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
         DID: pallet_did::{Module, Call, Storage, Event<T>},

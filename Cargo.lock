@@ -795,6 +795,7 @@ dependencies = [
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-user-consent",
  "parity-scale-codec",
  "serde",
  "sp-api",
@@ -3810,6 +3811,7 @@ dependencies = [
  "pallet-did",
  "pallet-registrar",
  "pallet-timestamp",
+ "pallet-user-consent",
  "parity-scale-codec",
  "serde",
  "sp-core",
@@ -4080,6 +4082,15 @@ dependencies = [
  "parity-scale-codec",
  "sp-api",
  "sp-runtime",
+]
+
+[[package]]
+name = "pallet-user-consent"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
 ]
 
 [[package]]

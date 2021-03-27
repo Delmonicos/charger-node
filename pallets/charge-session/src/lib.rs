@@ -57,6 +57,7 @@ pub mod pallet {
     };
     use pallet_registrar as registrar;
     use pallet_timestamp as timestamp;
+    use pallet_user_consent as consent;
     use sp_runtime::{traits::{IdentifyAccount, Hash}, RuntimeAppPublic};
 
     #[pallet::genesis_config]
@@ -87,6 +88,7 @@ pub mod pallet {
         + CreateSignedTransaction<Call<Self>>
         + registrar::Config
         + timestamp::Config
+        + consent::Config
     {
         type AuthorityId: AppCrypto<
             <Self as SigningTypes>::Public,
@@ -146,7 +148,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             charger: T::AccountId,
         ) -> DispatchResultWithPostInfo {
-            let sender = ensure_signed(origin)?;
+            let sender = ensure_signed(origin.clone())?;
             ensure!(Self::is_charger(&charger), Error::<T>::NotRegisteredCharger);
 
             let now = <timestamp::Module<T>>::get();
@@ -180,6 +182,9 @@ pub mod pallet {
 
             // Generate a new session_id
             let session_id = Self::generate_charge_id(&sender, &charger);
+
+            // Store the user consent
+            <consent::Module<T>>::new_consent_for_user(origin, charger.clone(), session_id.clone())?;
 
             // Add the request to the storage with current timestamp
             UserRequests::<T>::insert(
@@ -215,6 +220,7 @@ pub mod pallet {
                 _ => {}
             }
             // TODO: check timestamp for maximal period of time between new_request & start_session ?
+            // TODO: check that user consent exists?
 
             // Remove the request from storage
             let request = UserRequests::<T>::take(&sender).expect("cannot be None");
