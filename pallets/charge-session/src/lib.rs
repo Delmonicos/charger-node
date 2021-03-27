@@ -1,14 +1,23 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use codec::{Decode, Encode};
-
-use pallet_registrar as registrar;
-use pallet_timestamp as timestamp;
-
 #[cfg(test)]
 mod tests;
 
-use charger_service::runtime::offchain::{api as charger_api, ChargeStatus};
+use codec::{Decode, Encode};
+
+#[derive(Debug, PartialEq, Default, Encode, Decode)]
+pub struct ChargeRequest<UserId, Moment, Hash> {
+    user_id: UserId,
+    created_at: Moment,
+    session_id: Hash
+}
+
+#[derive(Debug, PartialEq, Default, Encode, Decode)]
+pub struct ChargingSession<UserId, Moment, Hash> {
+    user_id: UserId,
+    started_at: Moment,
+    session_id: Hash,
+}
 
 pub mod crypto {
     use frame_system::offchain::AppCrypto;
@@ -35,23 +44,10 @@ pub mod crypto {
     }
 }
 
-#[derive(Debug, PartialEq, Default, Encode, Decode)]
-pub struct ChargeRequest<UserId, Moment> {
-    user_id: UserId,
-    created_at: Moment,
-}
-
-#[derive(Debug, PartialEq, Default, Encode, Decode)]
-pub struct ChargingSession<UserId, Moment> {
-    user_id: UserId,
-    started_at: Moment,
-}
-
-pub use pallet::*;
-
 #[frame_support::pallet]
 pub mod pallet {
-    use super::*;
+    use super::{ChargeRequest, ChargingSession};
+    use charger_service::runtime::offchain::{api as charger_api, ChargeStatus};
     use frame_support::pallet_prelude::*;
     use frame_system::{
         offchain::{
@@ -59,7 +55,9 @@ pub mod pallet {
         },
         pallet_prelude::*,
     };
-    use sp_runtime::{traits::IdentifyAccount, RuntimeAppPublic};
+    use pallet_registrar as registrar;
+    use pallet_timestamp as timestamp;
+    use sp_runtime::{traits::{IdentifyAccount, Hash}, RuntimeAppPublic};
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
@@ -104,12 +102,12 @@ pub mod pallet {
     #[pallet::storage]
     #[pallet::getter(fn user_requests)]
     pub type UserRequests<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, ChargeRequest<T::AccountId, T::Moment>>;
+        StorageMap<_, Blake2_128Concat, T::AccountId, ChargeRequest<T::AccountId, T::Moment, T::Hash>>;
 
     #[pallet::storage]
     #[pallet::getter(fn active_sessions)]
     pub type ActiveSessions<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, ChargingSession<T::AccountId, T::Moment>>;
+        StorageMap<_, Blake2_128Concat, T::AccountId, ChargingSession<T::AccountId, T::Moment, T::Hash>>;
 
     #[pallet::storage]
     pub type ChargerOrganization<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
@@ -117,12 +115,12 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        /// SessionRequested(User, Charger, Timestamp)
-        SessionRequested(T::AccountId, T::AccountId, T::Moment),
-        /// SessionStarted(User, Charger, Timestamp)
-        SessionStarted(T::AccountId, T::AccountId, T::Moment),
-        /// SessionEnded(User, Charger, Timestamp, kwh)
-        SessionEnded(T::AccountId, T::AccountId, T::Moment, u64),
+        /// SessionRequested(User, Charger, Timestamp, SessionId)
+        SessionRequested(T::AccountId, T::AccountId, T::Moment, T::Hash),
+        /// SessionStarted(User, Charger, Timestamp, SessionId)
+        SessionStarted(T::AccountId, T::AccountId, T::Moment, T::Hash),
+        /// SessionEnded(User, Charger, Timestamp, SessionId, kwh)
+        SessionEnded(T::AccountId, T::AccountId, T::Moment, T::Hash, u64),
     }
 
     #[pallet::error]
@@ -180,16 +178,20 @@ pub mod pallet {
                 _ => {}
             }
 
+            // Generate a new session_id
+            let session_id = Self::generate_charge_id(&sender, &charger);
+
             // Add the request to the storage with current timestamp
             UserRequests::<T>::insert(
                 &charger,
                 ChargeRequest {
                     user_id: sender.clone(),
                     created_at: now,
+                    session_id
                 },
             );
 
-            Self::deposit_event(Event::SessionRequested(sender, charger, now));
+            Self::deposit_event(Event::SessionRequested(sender, charger, now, session_id));
 
             Ok(().into())
         }
@@ -215,7 +217,7 @@ pub mod pallet {
             // TODO: check timestamp for maximal period of time between new_request & start_session ?
 
             // Remove the request from storage
-            UserRequests::<T>::take(&sender);
+            let request = UserRequests::<T>::take(&sender).expect("cannot be None");
 
             // Add the pending charging session
             ActiveSessions::<T>::insert(
@@ -223,11 +225,12 @@ pub mod pallet {
                 ChargingSession {
                     user_id: user.clone(),
                     started_at: now,
+                    session_id: request.session_id,
                 },
             );
 
             // Emit an event
-            Self::deposit_event(Event::SessionStarted(user, sender, now));
+            Self::deposit_event(Event::SessionStarted(user, sender, now, request.session_id));
 
             Ok(().into())
         }
@@ -253,10 +256,10 @@ pub mod pallet {
             }
 
             // Remove the request from storage
-            ActiveSessions::<T>::take(&sender);
+            let session = ActiveSessions::<T>::take(&sender).expect("Cannot be None");
 
             // Emit an event
-            Self::deposit_event(Event::SessionEnded(user, sender, now, kwh));
+            Self::deposit_event(Event::SessionEnded(user, sender, now, session.session_id, kwh));
 
             Ok(().into())
         }
@@ -363,5 +366,22 @@ pub mod pallet {
                 _ => Err(()),
             }
         }
+
+        /// Generate a new charge session id
+        /// ID is a hash of the concatenation of
+        ///     - current block number
+        ///     - AccountId of the user (charge requester)
+        ///     - AccountId of the charger
+        /// since there is only one possible session for a charger and user at any given time, this identifier is guaranteed to be unique
+        fn generate_charge_id(user: &T::AccountId, charger: &T::AccountId) -> T::Hash {
+            let block_number = <frame_system::Pallet<T>>::block_number();
+            let mut key = T::AccountId::encode(user);
+            key.append(&mut T::AccountId::encode(charger));
+            key.append(&mut T::BlockNumber::encode(&block_number));
+            let hash = T::Hashing::hash(&key);
+            return hash;
+        }
     }
 }
+
+pub use pallet::*;
