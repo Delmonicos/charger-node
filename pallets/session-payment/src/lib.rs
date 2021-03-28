@@ -12,17 +12,19 @@ type Currency = u128;
 type SubsStr = Vec<u8>;
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
-pub struct UserConsent<Moment> {
+pub struct UserConsent<Origin, Moment> {
+	proof: Origin,
     timestamp: Moment,
     iban: SubsStr,
     bic_code: SubsStr,
 }
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
-pub struct PaymentRequest<AccountId, Moment> {
-    account_id: AccountId,
+pub struct PaymentExecution<Moment> {
     timestamp: Moment,
     amount: Currency,
+	iban: SubsStr,
+	bic_code: SubsStr,
 }
 
 pub use pallet::*;
@@ -44,8 +46,14 @@ pub mod pallet {
     pub struct Pallet<T>(_);
 
     #[pallet::storage]
+	#[pallet::getter(fn user_consents)]
     pub type UserConsents<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, UserConsent<T::Moment>>;
+        StorageMap<_, Blake2_128Concat, T::AccountId, UserConsent<T::AccountId, T::Moment>>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn user_payments)]
+	pub type UserPayments<T: Config> =
+	StorageMap<_, Blake2_128Concat, T::AccountId, PaymentExecution<T::Moment>>;
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -81,6 +89,7 @@ pub mod pallet {
             UserConsents::<T>::insert(
                 &sender,
                 UserConsent {
+					proof: sender.clone(),
                     timestamp: now,
                     iban: iban.clone(),
                     bic_code: bic_code.clone(),
@@ -96,23 +105,41 @@ pub mod pallet {
 
         #[pallet::weight(1_000)]
         pub fn process_payment(
-            origin: OriginFor<T>,
-            amount: Currency,
+			origin: OriginFor<T>,
+			debtor: T::AccountId,
+			amount: Currency,
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             let now = <timestamp::Module<T>>::get();
 
             // Validate that a request exists for this user & charger
-            let consent = UserConsents::<T>::get(&sender);
-            let (_iban, _bic_code) = match consent {
+            let consent = UserConsents::<T>::get(&debtor);
+            let (iban, bic_code, debtOrigin) = match consent {
                 None => return Err(Error::<T>::NoConsentForPayment.into()),
-                Some(consent) => (consent.iban, consent.bic_code),
+                Some(consent) => (consent.iban, consent.bic_code, consent.proof),
             };
+
+			//Validate that the debtor has given the consent
+			// let debtConsent = ensure_signed(debtOrigin)?;
+			if debtOrigin != debtor {
+				return Err(Error::<T>::NoConsentForPayment.into());
+			}
+
 
             // TODO: Execute payment
 
+			// Add the request to the storage with current timestamp
+			UserPayments::<T>::insert(
+				&debtor,
+				PaymentExecution {
+					timestamp: now,
+					amount: amount.clone(),
+					iban: iban.clone(),
+					bic_code: bic_code.clone(),
+				},
+			);
             // Emit an event
-            Self::deposit_event(Event::PaymentProcessed(sender, now, amount));
+            Self::deposit_event(Event::PaymentProcessed(debtor, now, amount));
 
             Ok(().into())
         }
