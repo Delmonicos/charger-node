@@ -89,6 +89,7 @@ pub mod pallet {
         + registrar::Config
         + timestamp::Config
         + consent::Config
+		+ pallet_session_payment::Config
     {
         type AuthorityId: AppCrypto<
             <Self as SigningTypes>::Public,
@@ -247,7 +248,7 @@ pub mod pallet {
             user: T::AccountId,
             kwh: u64,
         ) -> DispatchResultWithPostInfo {
-            let sender = ensure_signed(origin)?;
+            let sender = ensure_signed(origin.clone())?;
             ensure!(Self::is_charger(&sender), Error::<T>::NotRegisteredCharger);
 
             let now = <timestamp::Module<T>>::get();
@@ -260,6 +261,16 @@ pub mod pallet {
                 }
                 _ => {}
             }
+
+			// Execute the payment
+			//TODO Remove the following line  when user will be replaced by session_id
+			let session_id = Self::generate_charge_id(&user, &sender);
+
+			<pallet_session_payment::Module<T>>::process_payment(
+				origin,
+				session_id,
+				kwh.into()
+			);
 
             // Remove the request from storage
             let session = ActiveSessions::<T>::take(&sender).expect("Cannot be None");
