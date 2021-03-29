@@ -16,7 +16,7 @@ pub mod pallet {
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
     use super::SessionConsent;
-        
+
     #[pallet::config]
     pub trait Config: frame_system::Config {
       type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
@@ -65,6 +65,12 @@ pub mod pallet {
             Ok(().into())
         }
     }
+
+	impl<T: Config> Pallet<T> {
+		pub fn get_consent_from_session_id(session_id: T::Hash) -> Option<SessionConsent<T::AccountId, T::AccountId>> {
+			UserConsent::<T>::get(&session_id)
+		}
+	}
 }
 
 pub use pallet::*;

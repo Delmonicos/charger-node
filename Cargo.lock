@@ -3995,6 +3995,7 @@ dependencies = [
  "frame-system",
  "hex-literal",
  "pallet-timestamp",
+ "pallet-user-consent",
  "parity-scale-codec",
  "serde",
  "sp-core",
