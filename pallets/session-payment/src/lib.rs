@@ -37,7 +37,7 @@ pub mod pallet {
 
     #[pallet::config]
     #[pallet::disable_frame_system_supertrait_check]
-    pub trait Config: frame_system::Config + consent::Config + timestamp::Config {
+    pub trait Config: frame_system::Config + consent::Config + timestamp::Config + pallet_charge_session::Config {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
     }
 
@@ -109,7 +109,9 @@ pub mod pallet {
             amount: Currency,
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
-            //TODO Verify that the sender is a charger
+
+			// Verify that the sender is a charger
+			ensure!(<pallet_charge_session::Module<T>>::is_charger(&sender), Error::<T>::NoConsentForPayment);
 
             let now = <timestamp::Module<T>>::get();
 

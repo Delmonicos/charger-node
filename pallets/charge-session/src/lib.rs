@@ -358,7 +358,7 @@ pub mod pallet {
             }
         }
 
-        fn is_charger(who: &T::AccountId) -> bool {
+        pub fn is_charger(who: &T::AccountId) -> bool {
             return <pallet_registrar::Module<T>>::members_of(<ChargerOrganization<T>>::get())
                 .contains(who);
         }

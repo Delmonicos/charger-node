@@ -3994,6 +3994,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "hex-literal",
+ "pallet-charge-session",
  "pallet-timestamp",
  "pallet-user-consent",
  "parity-scale-codec",
