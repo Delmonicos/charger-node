@@ -3995,6 +3995,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "hex-literal",
+ "pallet-did",
  "pallet-registrar",
  "pallet-timestamp",
  "pallet-user-consent",

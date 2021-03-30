@@ -27,6 +27,7 @@ frame_support::construct_runtime!(
     ChargeSession: pallet_charge_session::{Module, Call, Storage, Event<T>},
     DID: pallet_did::{Module, Call, Storage, Event<T>},
     Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
+    SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
   }
 );
 
@@ -85,6 +86,10 @@ impl pallet_did::Config for Test {
 
 impl pallet_user_consent::Config for Test {
     type Event = Event;
+}
+
+impl pallet_session_payment::Config for Test {
+	type Event = Event;
 }
 
 impl pallet_charge_session::Config for Test {
@@ -464,7 +469,7 @@ fn should_store_user_consent() {
 
         let request = ChargeSession::user_requests(charger).expect("no user request");
         let session_id = request.session_id;
-        
+
         let consent = UserConsent::user_consent(session_id).expect("no user consent");
 
         assert_eq!(consent.charger_id, charger);

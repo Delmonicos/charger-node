@@ -30,6 +30,7 @@ pallet-registrar = { path = '../registrar', default-features = false, version = 
 [dev-dependencies]
 serde = { version = "1.0.119" }
 sp-io = { default-features = false, version = '3.0.0' }
+pallet-did = { git = 'https://github.com/Delmonicos/pallet-did', default-features = false}
 hex-literal = "0.3.1"
 
 [features]

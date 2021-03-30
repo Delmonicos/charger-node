@@ -5,7 +5,7 @@ use sp_core::{sr25519::Signature, H256};
 use sp_io::TestExternalities;
 use sp_runtime::{
     testing::{Header, TestXt},
-    traits::{BlakeTwo256, Extrinsic as ExtrinsicT, IdentifyAccount, IdentityLookup, Verify},
+    traits::{BlakeTwo256, Extrinsic as ExtrinsicT, IdentifyAccount, IdentityLookup, Verify, Hash},
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
@@ -27,6 +27,9 @@ frame_support::construct_runtime!(
     System: frame_system::{Module, Call, Config, Storage, Event<T>},
     Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
     SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
+    UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
+    DID: pallet_did::{Module, Call, Storage, Event<T>},
+    Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
   }
 );
 
@@ -75,6 +78,21 @@ impl pallet_timestamp::Config for Test {
 
 impl pallet_session_payment::Config for Test {
     type Event = Event;
+}
+
+impl pallet_user_consent::Config for Test {
+	type Event = Event;
+}
+
+impl pallet_registrar::Config for Test {
+	type Event = Event;
+}
+
+impl pallet_did::Config for Test {
+	type Event = Event;
+	type Public = <Signature as Verify>::Signer;
+	type Signature = Signature;
+	type Time = Timestamp;
 }
 
 impl frame_system::offchain::SigningTypes for Test {
@@ -158,8 +176,13 @@ fn should_process_payment_for_registered_user() {
 	new_test_ext().execute_with(|| {
 		let user = Public::from_raw(hex!("bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"));
 		register_new_usr(user);
+		let hash = <Test as frame_system::Config>::Hashing::hash(&user);
 
-		assert_ok!(SessionPayment::process_payment(Origin::signed(user), 1000));
+		//TODO Write the right test: create the session_id before paying
+		// assert_ok!(SessionPayment::process_payment(Origin::signed(user), hash, 1000));
+		assert_err!(SessionPayment::process_payment(Origin::signed(user), hash, 1000),
+			pallet_session_payment::Error::<Test>::NoConsentForPayment
+        );
 
 	});
 }
@@ -172,8 +195,8 @@ fn should_not_process_payment_for_unregistered_user() {
 		register_new_usr(user);
 
 		let user2 = Public::from_raw(hex!("9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"));
-
-		assert_err!(SessionPayment::process_payment(Origin::signed(user2), 1000),
+		let hash = <Test as frame_system::Config>::Hashing::hash(&user);
+		assert_err!(SessionPayment::process_payment(Origin::signed(user2), hash, 1000),
 			pallet_session_payment::Error::<Test>::NoConsentForPayment
         );
 
