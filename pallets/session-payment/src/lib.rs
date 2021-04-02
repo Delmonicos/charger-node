@@ -164,6 +164,7 @@ pub mod pallet {
             Ok(().into())
         }
 
+        // TODO: this can be a public function (not in #[pallet::call])
         #[pallet::weight(1_000)]
         pub fn is_allowed_to_pay(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
@@ -172,6 +173,12 @@ pub mod pallet {
                 None => Err(Error::<T>::NoConsentForPayment.into()),
                 Some(_consent) => Ok(().into()),
             }
+        }
+    }
+    
+    impl<T: Config> Pallet<T> {
+        pub fn has_consent(who: &T::AccountId) -> bool {
+            UserConsents::<T>::get(who).is_some()
         }
     }
 }

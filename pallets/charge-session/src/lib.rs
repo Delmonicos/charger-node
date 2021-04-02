@@ -132,6 +132,7 @@ pub mod pallet {
         NoChargingRequest,
         NoChargingSession,
         ChargerIsBusy,
+        NoPaymentConsent,
     }
 
     #[pallet::hooks]
@@ -153,6 +154,15 @@ pub mod pallet {
             ensure!(Self::is_charger(&charger), Error::<T>::NotRegisteredCharger);
 
             let now = <timestamp::Module<T>>::get();
+
+            // Check that sender consent exists in pallet_session_payment
+            if <pallet_session_payment::Module<T>>::has_consent(&sender) == false {
+                debug::native::warn!(
+                    "No consent for user {}",
+                    &sender,
+                );
+                return Err(Error::<T>::NoPaymentConsent.into());
+            }
 
             // Check that this charger does not have another pending request
             // TODO: expiration period for request?
@@ -221,7 +231,6 @@ pub mod pallet {
                 _ => {}
             }
             // TODO: check timestamp for maximal period of time between new_request & start_session ?
-            // TODO: check that user consent exists?
 
             // Remove the request from storage
             let request = UserRequests::<T>::take(&sender).expect("cannot be None");
@@ -262,18 +271,26 @@ pub mod pallet {
                 _ => {}
             }
 
-			// Execute the payment
-			//TODO Remove the following line  when user will be replaced by session_id
-			let session_id = Self::generate_charge_id(&user, &sender);
-
-			<pallet_session_payment::Module<T>>::process_payment(
-				origin,
-				session_id,
-				kwh.into()
-			);
-
             // Remove the request from storage
             let session = ActiveSessions::<T>::take(&sender).expect("Cannot be None");
+
+            // Execute the payment
+			match <pallet_session_payment::Module<T>>::process_payment(
+				origin,
+				session.session_id,
+				kwh.into()
+			) {
+                Err(error) => {
+                    // The error is just logged here, because we want to end the session even if payment has failed
+                    // pallet_session_payment deposits an error event which is handled manually in this case
+                    debug::native::error!(
+                        "An error occured in pallet_session_payment::process_payment for session id {}: {:?}",
+                        &session.session_id,
+                        error
+                    );
+                },
+                _ => {}
+            }
 
             // Emit an event
             Self::deposit_event(Event::SessionEnded(user, sender, now, session.session_id, kwh));
