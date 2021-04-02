@@ -157,6 +157,16 @@ pub fn register_charger(charger: Public) {
     ));
 }
 
+pub fn add_consent(user: Public) {
+    if SessionPayment::has_consent(&user) == false {
+        assert_ok!(SessionPayment::new_consent(
+            Origin::signed(user),
+            "iban".into(),
+            "bic".into()
+        ));
+    }
+}
+
 #[test]
 fn should_create_new_request() {
     new_test_ext().execute_with(|| {
@@ -167,6 +177,7 @@ fn should_create_new_request() {
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
         register_charger(charger);
+        add_consent(user);
 
         Timestamp::set_timestamp(999);
 
@@ -191,6 +202,7 @@ fn should_start_a_new_session() {
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
         register_charger(charger);
+        add_consent(user);
 
         Timestamp::set_timestamp(999);
         assert!(ChargeSession::active_sessions(charger).is_none());
@@ -216,6 +228,7 @@ fn should_not_start_unrequested_session() {
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
         register_charger(charger);
+        add_consent(user);
 
         assert_err!(
             ChargeSession::start_session(Origin::signed(charger), user),
@@ -235,6 +248,7 @@ fn should_not_start_twice() {
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
         register_charger(charger);
+        add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user));
@@ -259,6 +273,7 @@ fn should_not_take_request_from_another_charger() {
         ));
         register_charger(charger_1);
         register_charger(charger_2);
+        add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger_2));
         assert_err!(
@@ -278,6 +293,7 @@ fn should_end_an_active_session() {
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
         register_charger(charger);
+        add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
         assert_ok!(ChargeSession::start_session(Origin::signed(charger), user));
@@ -305,6 +321,7 @@ fn should_not_end_a_session_from_another_charger() {
         ));
         register_charger(charger_1);
         register_charger(charger_2);
+        add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger_1));
         assert_ok!(ChargeSession::start_session(
@@ -333,6 +350,8 @@ fn should_reject_new_request_if_request_already_exists() {
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
         register_charger(charger);
+        add_consent(user_1);
+        add_consent(user_2);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
         assert_err!(
@@ -355,6 +374,8 @@ fn should_reject_new_request_if_charge_is_active() {
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
         register_charger(charger);
+        add_consent(user_1);
+        add_consent(user_2);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
         assert_ok!(ChargeSession::start_session(
@@ -381,6 +402,8 @@ fn should_chain_two_sessions() {
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
         register_charger(charger);
+        add_consent(user_1);
+        add_consent(user_2);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user_1), charger));
         assert_ok!(ChargeSession::start_session(
@@ -415,6 +438,7 @@ fn should_reject_new_request_for_unregistered_charger() {
         let charger = Public::from_raw(hex!(
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
+        add_consent(user);
         assert_err!(
             ChargeSession::new_request(Origin::signed(user), charger),
             pallet_charge_session::Error::<Test>::NotRegisteredCharger
@@ -431,6 +455,7 @@ fn should_reject_start_session_for_unregistered_charger() {
         let charger = Public::from_raw(hex!(
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
+        add_consent(user);
         assert_err!(
             ChargeSession::start_session(Origin::signed(charger), user),
             pallet_charge_session::Error::<Test>::NotRegisteredCharger
@@ -447,6 +472,7 @@ fn should_reject_end_session_for_unregistered_charger() {
         let charger = Public::from_raw(hex!(
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
+        add_consent(user);
         assert_err!(
             ChargeSession::end_session(Origin::signed(charger), user, 99),
             pallet_charge_session::Error::<Test>::NotRegisteredCharger
@@ -464,7 +490,8 @@ fn should_store_user_consent() {
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
         register_charger(charger);
-
+        add_consent(user);
+        
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
 
         let request = ChargeSession::user_requests(charger).expect("no user request");
@@ -474,5 +501,22 @@ fn should_store_user_consent() {
 
         assert_eq!(consent.charger_id, charger);
         assert_eq!(consent.user_id, user);
+    });
+}
+
+#[test]
+fn should_reject_new_request_without_consent() {
+    new_test_ext().execute_with(|| {
+        let user = Public::from_raw(hex!(
+            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        ));
+        let charger = Public::from_raw(hex!(
+            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
+        ));
+        register_charger(charger);
+        assert_err!(
+            ChargeSession::new_request(Origin::signed(user), charger),
+            pallet_charge_session::Error::<Test>::NoPaymentConsent
+        );
     });
 }
