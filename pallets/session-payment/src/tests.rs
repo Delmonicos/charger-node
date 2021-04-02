@@ -172,7 +172,7 @@ fn should_not_be_allowed_to_pay() {
 }
 
 #[test]
-fn should_process_payment_for_registered_user() {
+fn should_process_payment_for_user_with_consent() {
 	new_test_ext().execute_with(|| {
 		let user = Public::from_raw(hex!("bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"));
 		register_new_usr(user);
@@ -189,14 +189,11 @@ fn should_process_payment_for_registered_user() {
 
 
 #[test]
-fn should_not_process_payment_for_unregistered_user() {
+fn should_not_process_payment_for_user_without_consent() {
 	new_test_ext().execute_with(|| {
-		let user = Public::from_raw(hex!("bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"));
-		register_new_usr(user);
-
-		let user2 = Public::from_raw(hex!("9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"));
+		let user = Public::from_raw(hex!("9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"));
 		let hash = <Test as frame_system::Config>::Hashing::hash(&user);
-		assert_err!(SessionPayment::process_payment(Origin::signed(user2), hash, 1000),
+		assert_err!(SessionPayment::process_payment(Origin::signed(user), hash, 1000),
 			pallet_session_payment::Error::<Test>::NoConsentForPayment
         );
 
