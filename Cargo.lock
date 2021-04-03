@@ -4094,7 +4094,13 @@ version = "1.0.0"
 dependencies = [
  "frame-support",
  "frame-system",
+ "hex-literal",
+ "pallet-timestamp",
  "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
 ]
 
 [[package]]
