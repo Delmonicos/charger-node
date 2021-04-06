@@ -33,16 +33,14 @@ pub mod pallet {
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
+    use pallet_registrar as registrar;
     use pallet_user_consent as consent;
-	use pallet_registrar as registrar;
 
     #[pallet::config]
     #[pallet::disable_frame_system_supertrait_check]
-    pub trait Config: frame_system::Config
-	+ consent::Config
-	+ timestamp::Config
-	+ registrar::Config
-	{
+    pub trait Config:
+        frame_system::Config + consent::Config + timestamp::Config + registrar::Config
+    {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
     }
 
@@ -115,8 +113,8 @@ pub mod pallet {
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
 
-			// Verify that the sender is a charger
-			// ensure!(<registrar::Module<T>>::members_of(<ChargerOrganization<T>>::get()).contains(&sender), Error::<T>::NoConsentForPayment);
+            // Verify that the sender is a charger
+            // ensure!(<registrar::Module<T>>::members_of(<ChargerOrganization<T>>::get()).contains(&sender), Error::<T>::NoConsentForPayment);
 
             let now = <timestamp::Module<T>>::get();
 
@@ -140,13 +138,12 @@ pub mod pallet {
             };
 
             // Calculate the price.
-			// For instance, we consider a fixed price of 0,15 €/kwh
-			// Price in in cents
+            // For instance, we consider a fixed price of 0,15 €/kwh
+            // Price in in cents
 
-			let amount = kwh * 15;
+            let amount = kwh * 15;
 
-			// TODO: Execute payment
-
+            // TODO: Execute payment
 
             // Add the request to the storage with current timestamp
             UserPayments::<T>::insert(
@@ -175,7 +172,7 @@ pub mod pallet {
             }
         }
     }
-    
+
     impl<T: Config> Pallet<T> {
         pub fn has_consent(who: &T::AccountId) -> bool {
             UserConsents::<T>::get(who).is_some()

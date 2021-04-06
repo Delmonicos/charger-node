@@ -13,13 +13,13 @@ pub struct SessionConsent<UserId, ChargerId> {
 
 #[frame_support::pallet]
 pub mod pallet {
+    use super::SessionConsent;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
-    use super::SessionConsent;
 
     #[pallet::config]
     pub trait Config: frame_system::Config {
-      type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+        type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
     }
 
     #[pallet::pallet]
@@ -28,7 +28,8 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn user_consent)]
-    pub type UserConsent<T: Config> = StorageMap<_, Blake2_128Concat, T::Hash, SessionConsent<T::AccountId, T::AccountId>>;
+    pub type UserConsent<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::Hash, SessionConsent<T::AccountId, T::AccountId>>;
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -46,7 +47,7 @@ pub mod pallet {
         pub fn new_consent_for_user(
             origin: OriginFor<T>,
             charger: T::AccountId,
-            session_id: T::Hash
+            session_id: T::Hash,
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             // TODO: check that charger is a charger (using membership pallet!)
@@ -66,11 +67,13 @@ pub mod pallet {
         }
     }
 
-	impl<T: Config> Pallet<T> {
-		pub fn get_consent_from_session_id(session_id: T::Hash) -> Option<SessionConsent<T::AccountId, T::AccountId>> {
-			UserConsent::<T>::get(&session_id)
-		}
-	}
+    impl<T: Config> Pallet<T> {
+        pub fn get_consent_from_session_id(
+            session_id: T::Hash,
+        ) -> Option<SessionConsent<T::AccountId, T::AccountId>> {
+            UserConsent::<T>::get(&session_id)
+        }
+    }
 }
 
 pub use pallet::*;

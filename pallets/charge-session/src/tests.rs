@@ -89,7 +89,7 @@ impl pallet_user_consent::Config for Test {
 }
 
 impl pallet_session_payment::Config for Test {
-	type Event = Event;
+    type Event = Event;
 }
 
 impl pallet_charge_session::Config for Test {
@@ -491,7 +491,7 @@ fn should_store_user_consent() {
         ));
         register_charger(charger);
         add_consent(user);
-        
+
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
 
         let request = ChargeSession::user_requests(charger).expect("no user request");

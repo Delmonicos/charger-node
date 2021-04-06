@@ -9,7 +9,7 @@ use codec::{Decode, Encode};
 pub struct ChargeRequest<UserId, Moment, Hash> {
     user_id: UserId,
     created_at: Moment,
-    session_id: Hash
+    session_id: Hash,
 }
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
@@ -58,7 +58,10 @@ pub mod pallet {
     use pallet_registrar as registrar;
     use pallet_timestamp as timestamp;
     use pallet_user_consent as consent;
-    use sp_runtime::{traits::{IdentifyAccount, Hash}, RuntimeAppPublic};
+    use sp_runtime::{
+        traits::{Hash, IdentifyAccount},
+        RuntimeAppPublic,
+    };
 
     #[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
@@ -89,7 +92,7 @@ pub mod pallet {
         + registrar::Config
         + timestamp::Config
         + consent::Config
-		+ pallet_session_payment::Config
+        + pallet_session_payment::Config
     {
         type AuthorityId: AppCrypto<
             <Self as SigningTypes>::Public,
@@ -104,13 +107,21 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn user_requests)]
-    pub type UserRequests<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, ChargeRequest<T::AccountId, T::Moment, T::Hash>>;
+    pub type UserRequests<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        T::AccountId,
+        ChargeRequest<T::AccountId, T::Moment, T::Hash>,
+    >;
 
     #[pallet::storage]
     #[pallet::getter(fn active_sessions)]
-    pub type ActiveSessions<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, ChargingSession<T::AccountId, T::Moment, T::Hash>>;
+    pub type ActiveSessions<T: Config> = StorageMap<
+        _,
+        Blake2_128Concat,
+        T::AccountId,
+        ChargingSession<T::AccountId, T::Moment, T::Hash>,
+    >;
 
     #[pallet::storage]
     pub type ChargerOrganization<T: Config> = StorageValue<_, T::AccountId, ValueQuery>;
@@ -157,10 +168,7 @@ pub mod pallet {
 
             // Check that sender consent exists in pallet_session_payment
             if <pallet_session_payment::Module<T>>::has_consent(&sender) == false {
-                debug::native::warn!(
-                    "No consent for user {}",
-                    &sender,
-                );
+                debug::native::warn!("No consent for user {}", &sender,);
                 return Err(Error::<T>::NoPaymentConsent.into());
             }
 
@@ -195,7 +203,11 @@ pub mod pallet {
             let session_id = Self::generate_charge_id(&sender, &charger);
 
             // Store the user consent
-            <consent::Module<T>>::new_consent_for_user(origin, charger.clone(), session_id.clone())?;
+            <consent::Module<T>>::new_consent_for_user(
+                origin,
+                charger.clone(),
+                session_id.clone(),
+            )?;
 
             // Add the request to the storage with current timestamp
             UserRequests::<T>::insert(
@@ -203,7 +215,7 @@ pub mod pallet {
                 ChargeRequest {
                     user_id: sender.clone(),
                     created_at: now,
-                    session_id
+                    session_id,
                 },
             );
 
@@ -275,11 +287,11 @@ pub mod pallet {
             let session = ActiveSessions::<T>::take(&sender).expect("Cannot be None");
 
             // Execute the payment
-			match <pallet_session_payment::Module<T>>::process_payment(
-				origin,
-				session.session_id,
-				kwh.into()
-			) {
+            match <pallet_session_payment::Module<T>>::process_payment(
+                origin,
+                session.session_id,
+                kwh.into(),
+            ) {
                 Err(error) => {
                     // The error is just logged here, because we want to end the session even if payment has failed
                     // pallet_session_payment deposits an error event which is handled manually in this case
@@ -288,12 +300,18 @@ pub mod pallet {
                         &session.session_id,
                         error
                     );
-                },
+                }
                 _ => {}
             }
 
             // Emit an event
-            Self::deposit_event(Event::SessionEnded(user, sender, now, session.session_id, kwh));
+            Self::deposit_event(Event::SessionEnded(
+                user,
+                sender,
+                now,
+                session.session_id,
+                kwh,
+            ));
 
             Ok(().into())
         }
