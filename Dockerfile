@@ -50,5 +50,5 @@ CMD ./target/release/charger-node --dev --tmp \
   --rpc-external \
   --rpc-cors=all \
   --port 30333 \
-  --ws-port 9945 \
+  --ws-port 440 \
   --rpc-port 8080
