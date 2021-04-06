@@ -45,4 +45,7 @@ RUN useradd rust --user-group --create-home --shell /bin/bash --groups sudo
 WORKDIR /home/rust/src
 COPY . /home/rust/src
 RUN cargo build --release
-CMD ./target/release/charger-node --dev --tmp
+CMD ./target/release/charger-node --dev --tmp \
+  --port 30333 \
+  --ws-port 9945 \
+  --rpc-port 8080 
