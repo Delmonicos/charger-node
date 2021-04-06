@@ -41,6 +41,13 @@ RUN	export PATH="$PATH:$HOME/.cargo/bin" && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 	rustup default stable
 
+EXPOSE 8080/tcp
+EXPOSE 8080/udp
+EXPOSE 30333/tcp
+EXPOSE 30333/udp
+EXPOSE 440/tcp
+EXPOSE 440/udp
+
 RUN useradd rust --user-group --create-home --shell /bin/bash --groups sudo
 WORKDIR /home/rust/src
 COPY . /home/rust/src
