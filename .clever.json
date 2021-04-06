@@ -1,9 +1,9 @@
 {
   "apps": [
     {
-      "app_id": "app_2b52bde3-57c1-48dc-9241-9e229a19b04e",
+      "app_id": "app_20d846dd-0847-442c-8f5a-db8892db250e",
       "org_id": "orga_2e73c214-188a-4c0d-b19c-3f17612eb235",
-      "deploy_url": "https://push-par-clevercloud-customers.services.clever-cloud.com/app_2b52bde3-57c1-48dc-9241-9e229a19b04e.git",
+      "deploy_url": "https://push-par-clevercloud-customers.services.clever-cloud.com/app_20d846dd-0847-442c-8f5a-db8892db250e.git",
       "name": "charger-node",
       "alias": "charger-node"
     }

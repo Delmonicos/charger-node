@@ -46,6 +46,9 @@ WORKDIR /home/rust/src
 COPY . /home/rust/src
 RUN cargo build --release
 CMD ./target/release/charger-node --dev --tmp \
+  --ws-external \
+  --rpc-external \
+  --rpc-cors=all \
   --port 30333 \
   --ws-port 9945 \
-  --rpc-port 8080 
+  --rpc-port 8080
