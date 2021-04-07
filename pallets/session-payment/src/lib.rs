@@ -9,21 +9,20 @@ use pallet_timestamp as timestamp;
 use sp_std::prelude::*;
 
 type Currency = u128;
-type SubsStr = Vec<u8>;
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
 pub struct UserConsent<Moment> {
     timestamp: Moment,
-    iban: SubsStr,
-    bic_code: SubsStr,
+    iban: Vec<u8>,
+    bic_code: Vec<u8>,
 }
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
 pub struct PaymentExecution<Moment> {
     timestamp: Moment,
     amount: Currency,
-    iban: SubsStr,
-    bic_code: SubsStr,
+    iban: Vec<u8>,
+    bic_code: Vec<u8>,
 }
 
 pub use pallet::*;
@@ -64,7 +63,7 @@ pub mod pallet {
         // PaymentProcessed(User, Timestamp, currency)
         PaymentProcessed(T::AccountId, T::Moment, Currency),
         // UserConsentAdded(User, Timestamp, IBAN, bic)
-        UserConsentAdded(T::AccountId, T::Moment, SubsStr, SubsStr),
+        UserConsentAdded(T::AccountId, T::Moment, Vec<u8>, Vec<u8>),
     }
 
     #[pallet::error]
@@ -82,8 +81,8 @@ pub mod pallet {
         #[pallet::weight(1_000)]
         pub fn new_consent(
             origin: OriginFor<T>,
-            iban: SubsStr,
-            bic_code: SubsStr,
+            iban: Vec<u8>,
+            bic_code: Vec<u8>,
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             let now = <timestamp::Module<T>>::get();
