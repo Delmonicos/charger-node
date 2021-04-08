@@ -52,7 +52,9 @@ RUN useradd rust --user-group --create-home --shell /bin/bash --groups sudo
 WORKDIR /home/rust/src
 COPY . /home/rust/src
 RUN cargo build --release
-CMD ./target/release/charger-node --dev --tmp \
+CMD ./target/release/charger-node \
+  --alice \
+  -d /var/lib/chain \
   --ws-external \
   --rpc-external \
   --rpc-cors=all \
