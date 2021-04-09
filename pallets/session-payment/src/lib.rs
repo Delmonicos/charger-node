@@ -57,6 +57,9 @@ pub mod pallet {
     pub type UserPayments<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, PaymentExecution<T::Moment>>;
 
+	#[pallet::storage]
+	pub type AllowedUsers<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
+
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
@@ -88,6 +91,10 @@ pub mod pallet {
             let now = <timestamp::Module<T>>::get();
 
             // Add the request to the storage with current timestamp
+
+			let mut vec = AllowedUsers::<T>::get();
+			vec.push(sender.clone());
+			AllowedUsers::<T>::put(vec);
 
             UserConsents::<T>::insert(
                 &sender,
@@ -170,7 +177,9 @@ pub mod pallet {
                 Some(_consent) => Ok(().into()),
             }
         }
-    }
+
+
+	}
 
     impl<T: Config> Pallet<T> {
         pub fn has_consent(who: &T::AccountId) -> bool {
