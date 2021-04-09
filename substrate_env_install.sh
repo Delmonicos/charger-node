@@ -1,6 +1,6 @@
 #!/bin/bash
-apt-get update
-apt-get install -y cmake pkg-config libssl-dev git build-essential clang libclang-dev curl libz-dev
+# apt-get update
+# apt-get install -y cmake pkg-config libssl-dev git build-essential clang libclang-dev curl libz-dev
 
 
 echo 'Updating Rust'
