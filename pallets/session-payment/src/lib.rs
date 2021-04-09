@@ -169,7 +169,7 @@ pub mod pallet {
 
         // TODO: this can be a public function (not in #[pallet::call])
         #[pallet::weight(1_000)]
-        pub fn is_allowed_to_pay(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+		pub fn is_allowed_to_pay(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             // Validate that a request exists for this user & charger
             match UserConsents::<T>::get(&sender) {
@@ -180,9 +180,8 @@ pub mod pallet {
 
 
 	}
-
     impl<T: Config> Pallet<T> {
-        pub fn has_consent(who: &T::AccountId) -> bool {
+		pub fn has_consent(who: &T::AccountId) -> bool {
             UserConsents::<T>::get(who).is_some()
         }
     }
