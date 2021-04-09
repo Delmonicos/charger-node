@@ -2,7 +2,7 @@
 
 ./target/release/charger-node \
   --alice \
-  -d /chain \
+  -d ./chain \
   --ws-external \
   --rpc-external \
   --rpc-cors=all \
