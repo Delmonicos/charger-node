@@ -27,6 +27,8 @@ structopt = '0.3.8'
 charger-node-runtime = { path = '../runtime', version = '3.0.0' }
 charger-service = { path = '../charger-service', default-features = false }
 payment-service = { path = '../payment-service', default-features = false }
+session-payment-rpc = { path = '../pallets/session-payment/rpc', default-features = false }
+
 
 # Substrate dependencies
 frame-benchmarking = '3.0.0'
@@ -53,6 +55,8 @@ sp-keystore = '0.9.0'
 
 # These dependencies are used for the node's RPCs
 jsonrpc-core = "15.1.0"
+jsonrpc-derive = "15.1.0"
+jsonrpc-core-client = "15.1.0"
 sc-rpc = '3.0.0'
 sp-api = '3.0.0'
 sc-rpc-api = '0.9.0'

@@ -4,7 +4,7 @@
 mod tests;
 
 use codec::{Decode, Encode};
-
+use core::convert::TryInto;
 use pallet_timestamp as timestamp;
 use sp_std::prelude::*;
 
@@ -184,5 +184,10 @@ pub mod pallet {
 		pub fn has_consent(who: &T::AccountId) -> bool {
             UserConsents::<T>::get(who).is_some()
         }
+
+		pub fn nb_allowed() -> u32 {
+			//AllowedUsers::<T>::get().len().try_into().unwrap()
+			256
+		}
     }
 }

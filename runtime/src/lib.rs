@@ -635,6 +635,17 @@ impl_runtime_apis! {
         }
     }
 
+        // Here we implement our custom runtime API.
+    impl session_payment_runtime_api::SessionPaymentApi<Block> for Runtime {
+        fn get_nb_allowed() -> u32 {
+            // This Runtime API calls into a specific pallet. Calling a pallet is a common
+            // design pattern. You can see most other APIs in this file do the same.
+            // It is also possible to write your logic right here in the runtime
+            // amalgamator file
+            SessionPayment::nb_allowed()
+        }
+    }
+
     #[cfg(feature = "runtime-benchmarks")]
     impl frame_benchmarking::Benchmark<Block> for Runtime {
         fn dispatch_benchmark(

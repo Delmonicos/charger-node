@@ -61,6 +61,8 @@ pallet-contracts = { default-features = false, version = '3.0.0' }
 pallet-contracts-primitives = { default-features = false, version = '3.0.0' }
 pallet-contracts-rpc-runtime-api = { default-features = false, version = '3.0.0' }
 
+session-payment-runtime-api = { default-features = false, path = "../pallets/session-payment/runtime-api" }
+
 # Identity and Group
 pallet-did = { git = 'https://github.com/Delmonicos/pallet-did', default-features = false}
 pallet-registrar = { path = '../pallets/registrar', default-features = false, version = '3.0.0' }
@@ -111,4 +113,5 @@ std = [
     "pallet-contracts/std",
     "pallet-contracts-primitives/std",
     "pallet-contracts-rpc-runtime-api/std",
+    "session-payment-runtime-api/std",
 ]
