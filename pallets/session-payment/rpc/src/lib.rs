@@ -6,7 +6,7 @@ use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::{generic::BlockId, traits::Block as BlockT};
 use std::sync::Arc;
-use session_payment_runtime_api::SessionPaymentApi as SessionPaymentRuntimeApi;
+pub use session_payment_runtime_api::SessionPaymentApi as SessionPaymentRuntimeApi;
 
 #[rpc]
 pub trait SessionPaymentApi<BlockHash> {
@@ -22,9 +22,8 @@ pub struct SessionPayment<C, M> {
 }
 
 impl<C, M> SessionPayment<C, M> {
-	/// Create new `SumStorage` instance with the given reference to the client.
 	pub fn new(client: Arc<C>) -> Self {
-		Self {
+		SessionPayment {
 			client,
 			_marker: Default::default(),
 		}

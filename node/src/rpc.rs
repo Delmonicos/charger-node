@@ -35,6 +35,7 @@ where
     C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Index>,
     C::Api: pallet_contracts_rpc::ContractsRuntimeApi<Block, AccountId, Balance, BlockNumber>,
     C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
+	C::Api: session_payment_rpc::SessionPaymentRuntimeApi<Block>,
     C::Api: BlockBuilder<Block>,
     P: TransactionPool + 'static,
 {
@@ -69,10 +70,6 @@ where
 	io.extend_with(SessionPaymentApi::to_delegate(
 		SessionPayment::new(client.clone()),
 	));
-
-	io.extend_with(
-		crate::silly_rpc::SillyRpc::to_delegate(crate::silly_rpc::Silly {})
-	);
 
     io
 }
