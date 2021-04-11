@@ -12,6 +12,9 @@ pub use session_payment_runtime_api::SessionPaymentApi as SessionPaymentRuntimeA
 pub trait SessionPaymentApi<BlockHash> {
 	#[rpc(name = "sessionPayment_getNbAllowed")]
 	fn get_nb_allowed(&self, at: Option<BlockHash>) -> Result<u32>;
+
+	#[rpc(name = "sessionPayment_getPaymentConsents")]
+	fn get_payment_consents(&self, at: Option<BlockHash>) -> Result<Vec<(Vec<u8>, Vec<u8>)>>;
 }
 
 /// A struct that implements the `SessionPaymentApi`.
@@ -69,4 +72,19 @@ impl<C, Block> SessionPaymentApi<<Block as BlockT>::Hash> for SessionPayment<C, 
 			data: Some(format!("{:?}", e).into()),
 		})
 	}
+
+	fn get_payment_consents(&self, at: Option<<Block as BlockT>::Hash>) -> Result<Vec<(Vec<u8>, Vec<u8>)>> {
+		let api = self.client.runtime_api();
+		let at = BlockId::hash(at.unwrap_or_else(||
+			// If the block hash is not supplied assume the best block.
+			self.client.info().best_hash));
+
+		let runtime_api_result = api.get_payment_consents(&at);
+		runtime_api_result.map_err(|e| RpcError {
+			code: ErrorCode::ServerError(9876), // No real reason for this value
+			message: "Something wrong".into(),
+			data: Some(format!("{:?}", e).into()),
+		})
+	}
+
 }

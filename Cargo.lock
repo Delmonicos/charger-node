@@ -6381,7 +6381,7 @@ version = "3.0.0"
 dependencies = [
  "serde_json",
  "sp-api",
- "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

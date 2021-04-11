@@ -57,8 +57,8 @@ pub mod pallet {
     pub type UserPayments<T: Config> =
         StorageMap<_, Blake2_128Concat, T::AccountId, PaymentExecution<T::Moment>>;
 
-	#[pallet::storage]
-	pub type AllowedUsers<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
+    #[pallet::storage]
+    pub type AllowedUsers<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -92,9 +92,9 @@ pub mod pallet {
 
             // Add the request to the storage with current timestamp
 
-			let mut vec = AllowedUsers::<T>::get();
-			vec.push(sender.clone());
-			AllowedUsers::<T>::put(vec);
+            let mut vec = AllowedUsers::<T>::get();
+            vec.push(sender.clone());
+            AllowedUsers::<T>::put(vec);
 
             UserConsents::<T>::insert(
                 &sender,
@@ -169,7 +169,7 @@ pub mod pallet {
 
         // TODO: this can be a public function (not in #[pallet::call])
         #[pallet::weight(1_000)]
-		pub fn is_allowed_to_pay(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
+        pub fn is_allowed_to_pay(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             // Validate that a request exists for this user & charger
             match UserConsents::<T>::get(&sender) {
@@ -177,17 +177,27 @@ pub mod pallet {
                 Some(_consent) => Ok(().into()),
             }
         }
-
-
-	}
+    }
     impl<T: Config> Pallet<T> {
-		pub fn has_consent(who: &T::AccountId) -> bool {
+        pub fn has_consent(who: &T::AccountId) -> bool {
             UserConsents::<T>::get(who).is_some()
         }
 
-		pub fn nb_allowed() -> u32 {
-			//AllowedUsers::<T>::get().len().try_into().unwrap()
-			256
-		}
+        pub fn nb_allowed() -> u32 {
+            AllowedUsers::<T>::get().len().try_into().unwrap()
+        }
+
+        pub fn get_payment_consents() -> Vec<(Vec<u8>, Vec<u8>)> {
+            let v = AllowedUsers::<T>::get();
+            v.into_iter()
+                .map(|key| {
+                    let consent = match UserConsents::<T>::get(key.clone()) {
+						Some(cs) => cs.iban,
+						None => "".as_bytes().to_vec()
+                    };
+                    (key.encode(), consent)
+                })
+                .collect()
+        }
     }
 }
