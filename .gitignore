@@ -13,3 +13,6 @@
 .local
 cargo_home/*
 .idea
+
+# Ignore the chain data
+chain
