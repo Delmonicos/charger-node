@@ -8,4 +8,5 @@
   --rpc-cors=all \
   --port 30333 \
   --ws-port 8080 \
-  --rpc-port 440
+  --rpc-port 440 \
+  --rpc-methods=unsafe
