@@ -15,6 +15,7 @@ pub struct UserConsent<Moment> {
     timestamp: Moment,
     iban: Vec<u8>,
     bic_code: Vec<u8>,
+	signature: Vec<u8>,
 }
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
@@ -35,7 +36,7 @@ pub mod pallet {
     use pallet_registrar as registrar;
     use pallet_user_consent as consent;
 
-    #[pallet::config]
+	#[pallet::config]
     #[pallet::disable_frame_system_supertrait_check]
     pub trait Config:
         frame_system::Config + consent::Config + timestamp::Config + registrar::Config
@@ -58,7 +59,7 @@ pub mod pallet {
         StorageMap<_, Blake2_128Concat, T::AccountId, PaymentExecution<T::Moment>>;
 
     #[pallet::storage]
-    pub type AllowedUsers<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
+    pub type AllowedUsers<T: Config> = StorageValue<_, Vec<(T::AccountId, Vec<u8>)>, ValueQuery>;
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
@@ -86,6 +87,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             iban: Vec<u8>,
             bic_code: Vec<u8>,
+			signature: Vec<u8>  // hex encoded signature of the concatenation of iban and bic_code
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             let now = <timestamp::Module<T>>::get();
@@ -93,7 +95,7 @@ pub mod pallet {
             // Add the request to the storage with current timestamp
 
             let mut vec = AllowedUsers::<T>::get();
-            vec.push(sender.clone());
+            vec.push((sender.clone(), signature.clone()));
             AllowedUsers::<T>::put(vec);
 
             UserConsents::<T>::insert(
@@ -102,6 +104,7 @@ pub mod pallet {
                     timestamp: now,
                     iban: iban.clone(),
                     bic_code: bic_code.clone(),
+					signature: signature.clone()
                 },
             );
 
@@ -191,7 +194,7 @@ pub mod pallet {
             let v = AllowedUsers::<T>::get();
             v.into_iter()
                 .map(|key| {
-                    let consent = match UserConsents::<T>::get(key.clone()) {
+                    let consent = match UserConsents::<T>::get(key.0.clone()) {
 						Some(cs) => cs.iban,
 						None => "".as_bytes().to_vec()
                     };
