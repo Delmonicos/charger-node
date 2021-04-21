@@ -67,7 +67,7 @@ pub mod pallet {
         // PaymentProcessed(User, Timestamp, currency)
         PaymentProcessed(T::AccountId, T::Moment, Currency),
         // UserConsentAdded(User, Timestamp, IBAN, bic)
-        UserConsentAdded(T::AccountId, T::Moment, Vec<u8>, Vec<u8>),
+        UserConsentAdded(T::AccountId, T::Moment, Vec<u8>, Vec<u8>, Vec<u8>),
     }
 
     #[pallet::error]
@@ -109,7 +109,7 @@ pub mod pallet {
             );
 
             // Fire event
-            Self::deposit_event(Event::UserConsentAdded(sender, now, iban, bic_code));
+            Self::deposit_event(Event::UserConsentAdded(sender, now, iban, bic_code, signature));
 
             Ok(().into())
         }
