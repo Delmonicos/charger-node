@@ -162,7 +162,8 @@ pub fn add_consent(user: Public) {
         assert_ok!(SessionPayment::new_consent(
             Origin::signed(user),
             "iban".into(),
-            "bic".into()
+            "bic".into(),
+			"signature".into()
         ));
     }
 }

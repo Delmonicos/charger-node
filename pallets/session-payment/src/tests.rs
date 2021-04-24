@@ -133,6 +133,7 @@ fn register_new_usr(user: Public) {
         Origin::signed(user),
         Vec::from("iban1"),
         Vec::from("bic_code1"),
+		Vec::from("Signature"),
     ));
 }
 
