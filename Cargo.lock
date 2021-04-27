@@ -811,6 +811,7 @@ dependencies = [
  "pallet-registrar",
  "pallet-session-payment",
  "pallet-sudo",
+ "pallet-tariff-manager",
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
@@ -4037,6 +4038,22 @@ dependencies = [
  "frame-system",
  "parity-scale-codec 2.0.1",
  "serde",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-tariff-manager"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "hex-literal",
+ "pallet-timestamp",
+ "parity-scale-codec 2.0.1",
+ "serde",
+ "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std",
