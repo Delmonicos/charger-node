@@ -4018,6 +4018,7 @@ dependencies = [
  "hex-literal",
  "pallet-did",
  "pallet-registrar",
+ "pallet-tariff-manager",
  "pallet-timestamp",
  "pallet-user-consent",
  "parity-scale-codec 2.0.1",

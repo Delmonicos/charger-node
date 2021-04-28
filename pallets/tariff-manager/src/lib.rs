@@ -17,7 +17,6 @@ pub mod pallet {
 
 
 	#[pallet::config]
-    #[pallet::disable_frame_system_supertrait_check]
     pub trait Config:
         frame_system::Config + timestamp::Config
     {
@@ -60,18 +59,22 @@ pub mod pallet {
 
 			AvailableTariffs::<T>::insert(
                 &label,
-                tariff
+                tariff.clone()
             );
 
             // Fire event
-            Self::deposit_event(Event::TariffAdded(label, sender, now));
+            Self::deposit_event(Event::TariffAdded(label, tariff, now));
 
             Ok(().into())
         }
 
     }
 
-    impl<T: Config> Pallet<T> {
-
-    }
+	impl<T: Config> Pallet<T> {
+		pub fn get_tariff(
+			label: Vec<u8>,
+		) -> Option<T::AccountId> {
+			AvailableTariffs::<T>::get(&label)
+		}
+	}
 }

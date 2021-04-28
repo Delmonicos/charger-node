@@ -15,7 +15,7 @@ pub struct UserConsent<Moment> {
     timestamp: Moment,
     iban: Vec<u8>,
     bic_code: Vec<u8>,
-	signature: Vec<u8>,
+    signature: Vec<u8>,
 }
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
@@ -35,11 +35,13 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use pallet_registrar as registrar;
     use pallet_user_consent as consent;
+	use pallet_tariff_manager as tariff_manager;
+
 
 	#[pallet::config]
     #[pallet::disable_frame_system_supertrait_check]
     pub trait Config:
-        frame_system::Config + consent::Config + timestamp::Config + registrar::Config
+        frame_system::Config + consent::Config + timestamp::Config + registrar::Config + tariff_manager::Config
     {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
     }
@@ -74,6 +76,7 @@ pub mod pallet {
     pub enum Error<T> {
         NoConsentForPayment,
         UserConsentRefused,
+        NoTariff,
         PaymentError,
     }
 
@@ -87,7 +90,7 @@ pub mod pallet {
             origin: OriginFor<T>,
             iban: Vec<u8>,
             bic_code: Vec<u8>,
-			signature: Vec<u8>  // hex encoded signature of the concatenation of iban and bic_code
+            signature: Vec<u8>, // hex encoded signature of the concatenation of iban and bic_code
         ) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             let now = <timestamp::Module<T>>::get();
@@ -104,12 +107,14 @@ pub mod pallet {
                     timestamp: now,
                     iban: iban.clone(),
                     bic_code: bic_code.clone(),
-					signature: signature.clone()
+                    signature: signature.clone(),
                 },
             );
 
             // Fire event
-            Self::deposit_event(Event::UserConsentAdded(sender, now, iban, bic_code, signature));
+            Self::deposit_event(Event::UserConsentAdded(
+                sender, now, iban, bic_code, signature,
+            ));
 
             Ok(().into())
         }
@@ -126,6 +131,12 @@ pub mod pallet {
             // ensure!(<registrar::Module<T>>::members_of(<ChargerOrganization<T>>::get()).contains(&sender), Error::<T>::NoConsentForPayment);
 
             let now = <timestamp::Module<T>>::get();
+
+            let tariff_contract_adr =
+                match <tariff_manager::Module<T>>::get_tariff(Vec::from("fixed_price")) {
+                    None => return Err(Error::<T>::NoTariff.into()),
+                    Some(contract_adr) => contract_adr,
+                };
 
             // Verify that there is a session_id corresponding
             let debtor = match <consent::Module<T>>::get_consent_from_session_id(session_id) {
@@ -195,8 +206,8 @@ pub mod pallet {
             v.into_iter()
                 .map(|key| {
                     let consent = match UserConsents::<T>::get(key.0.clone()) {
-						Some(cs) => cs.iban,
-						None => "".as_bytes().to_vec()
+                        Some(cs) => cs.iban,
+                        None => "".as_bytes().to_vec(),
                     };
                     (key.encode(), consent)
                 })

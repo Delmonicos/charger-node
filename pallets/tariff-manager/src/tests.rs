@@ -117,7 +117,7 @@ fn should_register_new_tariff() {
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
         let smart_contract = Public::from_raw(hex!(
-            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
+            "8ff2ad81f54d09f503d8abc01fc6e50d34e5ad8c5784a284faf453475a328ca9"
         ));
         assert_ok!(TariffManager::new_tariff(
             Origin::signed(user),

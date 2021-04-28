@@ -52,6 +52,9 @@ pub use pallet_session_payment;
 /// The user-consent pallet
 pub use pallet_user_consent;
 
+/// The tariff-manager pallet
+pub use pallet_tariff_manager;
+
 /// An index to a block.
 pub type BlockNumber = u32;
 
@@ -348,6 +351,10 @@ impl pallet_session_payment::Config for Runtime {
     type Event = Event;
 }
 
+impl pallet_tariff_manager::Config for Runtime {
+	type Event = Event;
+}
+
 impl pallet_did::Config for Runtime {
     type Event = Event;
     type Public = <Signature as sp_runtime::traits::Verify>::Signer;
@@ -435,6 +442,7 @@ construct_runtime!(
         TransactionPayment: pallet_transaction_payment::{Module, Storage},
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         Contracts: pallet_contracts::{Module, Call, Config<T>, Storage, Event<T>},
+        TariffManager: pallet_tariff_manager::{Module, Call, Storage, Event<T>},
         UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
         ChargeSession: pallet_charge_session::{Module, Call, Config<T>, Storage, Event<T>},
         SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
