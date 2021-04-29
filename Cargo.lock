@@ -4016,6 +4016,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "hex-literal",
+ "pallet-contracts",
  "pallet-did",
  "pallet-registrar",
  "pallet-tariff-manager",

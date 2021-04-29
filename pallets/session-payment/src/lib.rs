@@ -6,9 +6,10 @@ mod tests;
 use codec::{Decode, Encode};
 use core::convert::TryInto;
 use pallet_timestamp as timestamp;
+use sp_core::crypto::UncheckedFrom;
 use sp_std::prelude::*;
+use frame_support::traits::Currency;
 
-type Currency = u128;
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
 pub struct UserConsent<Moment> {
@@ -21,7 +22,7 @@ pub struct UserConsent<Moment> {
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
 pub struct PaymentExecution<Moment> {
     timestamp: Moment,
-    amount: Currency,
+    amount: u128,
     iban: Vec<u8>,
     bic_code: Vec<u8>,
 }
@@ -33,18 +34,24 @@ pub mod pallet {
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
+    use pallet_contracts as contracts;
     use pallet_registrar as registrar;
+    use pallet_tariff_manager as tariff_manager;
     use pallet_user_consent as consent;
-	use pallet_tariff_manager as tariff_manager;
 
 
 	#[pallet::config]
     #[pallet::disable_frame_system_supertrait_check]
     pub trait Config:
-        frame_system::Config + consent::Config + timestamp::Config + registrar::Config + tariff_manager::Config
+        frame_system::Config
+        + consent::Config
+        + timestamp::Config
+        + registrar::Config
+        + tariff_manager::Config
+        + contracts::Config
     {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-    }
+	}
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
@@ -66,8 +73,8 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        // PaymentProcessed(User, Timestamp, currency)
-        PaymentProcessed(T::AccountId, T::Moment, Currency),
+        // PaymentProcessed(User, Timestamp, u128)
+        PaymentProcessed(T::AccountId, T::Moment, u128),
         // UserConsentAdded(User, Timestamp, IBAN, bic)
         UserConsentAdded(T::AccountId, T::Moment, Vec<u8>, Vec<u8>, Vec<u8>),
     }
@@ -84,7 +91,11 @@ pub mod pallet {
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
     #[pallet::call]
-    impl<T: Config> Pallet<T> {
+    impl<T: Config> Pallet<T>
+    where
+        T::AccountId: UncheckedFrom<T::Hash>,
+        T::AccountId: AsRef<[u8]>,
+    {
         #[pallet::weight(1_000)]
         pub fn new_consent(
             origin: OriginFor<T>,
@@ -132,11 +143,16 @@ pub mod pallet {
 
             let now = <timestamp::Module<T>>::get();
 
+
             let tariff_contract_adr =
                 match <tariff_manager::Module<T>>::get_tariff(Vec::from("fixed_price")) {
                     None => return Err(Error::<T>::NoTariff.into()),
                     Some(contract_adr) => contract_adr,
                 };
+
+			let min_balance = <T as pallet_contracts::Config>::Currency::minimum_balance();
+			let input_data = Vec::from("get_price");
+            <contracts::Module<T>>::bare_call(sender.clone(), tariff_contract_adr, min_balance, 0, input_data);
 
             // Verify that there is a session_id corresponding
             let debtor = match <consent::Module<T>>::get_consent_from_session_id(session_id) {
