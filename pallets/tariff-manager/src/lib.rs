@@ -28,14 +28,18 @@ pub mod pallet {
     pub struct Pallet<T>(_);
 
     #[pallet::storage]
-    #[pallet::getter(fn user_consents)]
+    #[pallet::getter(fn available_tariffs)]
     pub type AvailableTariffs<T: Config> =
         StorageMap<_, Blake2_128Concat, Vec<u8>, T::AccountId>;
+
+	#[pallet::storage]
+	pub type CurrentPrice<T: Config> = StorageValue<_, u128, ValueQuery>;
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
         TariffAdded(Vec<u8>, T::AccountId, T::Moment),
+		PriceModified(u128),
     }
 
     #[pallet::error]
@@ -54,7 +58,7 @@ pub mod pallet {
 			label: Vec<u8>,
             tariff: T::AccountId
         ) -> DispatchResultWithPostInfo {
-            let sender = ensure_signed(origin)?;
+            let _sender = ensure_signed(origin)?;
 			let now = <timestamp::Module<T>>::get();
 
 			AvailableTariffs::<T>::insert(
@@ -68,6 +72,21 @@ pub mod pallet {
             Ok(().into())
         }
 
+		#[pallet::weight(1_000)]
+		pub fn set_current_price(
+			origin: OriginFor<T>,
+			new_price: u128,
+		) -> DispatchResultWithPostInfo {
+			let _sender = ensure_signed(origin)?;
+
+			CurrentPrice::<T>::put(new_price);
+
+			// Fire event
+			Self::deposit_event(Event::PriceModified(new_price));
+
+			Ok(().into())
+		}
+
     }
 
 	impl<T: Config> Pallet<T> {
@@ -75,6 +94,10 @@ pub mod pallet {
 			label: Vec<u8>,
 		) -> Option<T::AccountId> {
 			AvailableTariffs::<T>::get(&label)
+		}
+
+		pub fn get_current_price() -> u128 {
+			CurrentPrice::<T>::get()
 		}
 	}
 }

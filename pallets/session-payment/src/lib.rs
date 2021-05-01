@@ -6,7 +6,6 @@ mod tests;
 use codec::{Decode, Encode};
 use core::convert::TryInto;
 use pallet_timestamp as timestamp;
-use sp_core::crypto::UncheckedFrom;
 use sp_std::prelude::*;
 use frame_support::traits::Currency;
 
@@ -38,6 +37,8 @@ pub mod pallet {
     use pallet_registrar as registrar;
     use pallet_tariff_manager as tariff_manager;
     use pallet_user_consent as consent;
+	use sp_core::crypto::UncheckedFrom;
+
 
 
 	#[pallet::config]
@@ -77,6 +78,7 @@ pub mod pallet {
         PaymentProcessed(T::AccountId, T::Moment, u128),
         // UserConsentAdded(User, Timestamp, IBAN, bic)
         UserConsentAdded(T::AccountId, T::Moment, Vec<u8>, Vec<u8>, Vec<u8>),
+		TariffRetrieved(Vec<u8>, u8),
     }
 
     #[pallet::error]
@@ -130,6 +132,30 @@ pub mod pallet {
             Ok(().into())
         }
 
+
+/*		#[pallet::weight(1_000)]
+		pub fn process_tariff(
+			origin: OriginFor<T>,
+		) -> DispatchResultWithPostInfo {
+			let sender = ensure_signed(origin)?;
+
+			let tariff_contract_adr =
+				match <tariff_manager::Module<T>>::get_tariff(Vec::from("fixed_price")) {
+					None => return Err(Error::<T>::NoTariff.into()),
+					Some(contract_adr) => contract_adr,
+				};
+
+			let min_balance = <T as pallet_contracts::Config>::Currency::minimum_balance();
+			let mut call = CallData::new( Selector::from_str("get_price") );
+			//let input_data = call.to_bytes().to_vec();
+			let input_data = Vec::from("");
+			let _result = <contracts::Module<T>>::bare_call(sender.clone(), tariff_contract_adr, min_balance, u64::MAX, input_data);
+			Self::deposit_event(Event::TariffRetrieved(Vec::from("fixed_price"), 123));
+
+			Ok(().into())
+		}*/
+
+
         #[pallet::weight(1_000)]
         pub fn process_payment(
             origin: OriginFor<T>,
@@ -143,16 +169,6 @@ pub mod pallet {
 
             let now = <timestamp::Module<T>>::get();
 
-
-            let tariff_contract_adr =
-                match <tariff_manager::Module<T>>::get_tariff(Vec::from("fixed_price")) {
-                    None => return Err(Error::<T>::NoTariff.into()),
-                    Some(contract_adr) => contract_adr,
-                };
-
-			let min_balance = <T as pallet_contracts::Config>::Currency::minimum_balance();
-			let input_data = Vec::from("get_price");
-            <contracts::Module<T>>::bare_call(sender.clone(), tariff_contract_adr, min_balance, 0, input_data);
 
             // Verify that there is a session_id corresponding
             let debtor = match <consent::Module<T>>::get_consent_from_session_id(session_id) {
@@ -177,7 +193,8 @@ pub mod pallet {
             // For instance, we consider a fixed price of 0,15 €/kwh
             // Price in in cents
 
-            let amount = kwh * 15;
+			let current_price = <tariff_manager::Module<T>>::get_current_price();
+            let amount = kwh * current_price;
 
             // TODO: Execute payment
 
@@ -208,6 +225,7 @@ pub mod pallet {
             }
         }
     }
+
     impl<T: Config> Pallet<T> {
         pub fn has_consent(who: &T::AccountId) -> bool {
             UserConsents::<T>::get(who).is_some()
@@ -229,5 +247,6 @@ pub mod pallet {
                 })
                 .collect()
         }
+
     }
 }

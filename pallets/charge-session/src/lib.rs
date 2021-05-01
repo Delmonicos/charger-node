@@ -63,7 +63,8 @@ pub mod pallet {
         RuntimeAppPublic,
     };
 
-    #[pallet::genesis_config]
+
+	#[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
         pub organization_account: T::AccountId,
     }
@@ -155,7 +156,8 @@ pub mod pallet {
     }
 
     #[pallet::call]
-    impl<T: Config> Pallet<T> {
+    impl<T: Config> Pallet<T>
+	{
         #[pallet::weight(1_000)]
         pub fn new_request(
             origin: OriginFor<T>,
@@ -287,7 +289,8 @@ pub mod pallet {
             let session = ActiveSessions::<T>::take(&sender).expect("Cannot be None");
 
             // Execute the payment
-            match <pallet_session_payment::Module<T>>::process_payment(
+			// TODO Uncomment the following code to execute the payment
+/*            match <pallet_session_payment::Module<T>>::process_payment(
                 origin,
                 session.session_id,
                 kwh.into(),
@@ -302,7 +305,7 @@ pub mod pallet {
                     );
                 }
                 _ => {}
-            }
+            }*/
 
             // Emit an event
             Self::deposit_event(Event::SessionEnded(
