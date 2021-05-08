@@ -133,7 +133,7 @@ pub mod pallet {
         }
 
 
-/*		#[pallet::weight(1_000)]
+		#[pallet::weight(1_000)]
 		pub fn process_tariff(
 			origin: OriginFor<T>,
 		) -> DispatchResultWithPostInfo {
@@ -146,14 +146,14 @@ pub mod pallet {
 				};
 
 			let min_balance = <T as pallet_contracts::Config>::Currency::minimum_balance();
-			let mut call = CallData::new( Selector::from_str("get_price") );
+			// let mut call = CallData::new( Selector::from_str("get_price") );
 			//let input_data = call.to_bytes().to_vec();
 			let input_data = Vec::from("");
 			let _result = <contracts::Module<T>>::bare_call(sender.clone(), tariff_contract_adr, min_balance, u64::MAX, input_data);
 			Self::deposit_event(Event::TariffRetrieved(Vec::from("fixed_price"), 123));
 
 			Ok(().into())
-		}*/
+		}
 
 
         #[pallet::weight(1_000)]

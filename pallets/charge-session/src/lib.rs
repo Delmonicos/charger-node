@@ -289,8 +289,7 @@ pub mod pallet {
             let session = ActiveSessions::<T>::take(&sender).expect("Cannot be None");
 
             // Execute the payment
-			// TODO Uncomment the following code to execute the payment
-/*            match <pallet_session_payment::Module<T>>::process_payment(
+            match <pallet_session_payment::Module<T>>::process_payment(
                 origin,
                 session.session_id,
                 kwh.into(),
@@ -305,7 +304,7 @@ pub mod pallet {
                     );
                 }
                 _ => {}
-            }*/
+            }
 
             // Emit an event
             Self::deposit_event(Event::SessionEnded(
