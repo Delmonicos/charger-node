@@ -32,7 +32,6 @@ pub mod pallet {
     use super::*;
     use frame_support::pallet_prelude::*;
     use frame_system::pallet_prelude::*;
-    use pallet_contracts as contracts;
     use pallet_registrar as registrar;
     use pallet_tariff_manager as tariff_manager;
     use pallet_user_consent as consent;
@@ -46,7 +45,6 @@ pub mod pallet {
         + timestamp::Config
         + registrar::Config
         + tariff_manager::Config
-        + contracts::Config
     {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
     }

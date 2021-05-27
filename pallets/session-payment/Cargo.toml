@@ -28,7 +28,7 @@ pallet-user-consent = { path = '../user-consent', default-features = false, vers
 pallet-tariff-manager = { path = '../tariff-manager', default-features = false, version = '1.0.0' }
 pallet-registrar = { path = '../registrar', default-features = false, version = '3.0.0' }
 # Contracts specific packages
-pallet-contracts = { default-features = false, version = '3.0.0' }
+# pallet-contracts = { default-features = false, version = '3.0.0' }
 
 
 [dev-dependencies]

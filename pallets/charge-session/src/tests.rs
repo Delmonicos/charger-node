@@ -28,6 +28,7 @@ frame_support::construct_runtime!(
     DID: pallet_did::{Module, Call, Storage, Event<T>},
     Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
     SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
+    TariffManager: pallet_tariff_manager::{Module, Call, Storage, Event<T>},
   }
 );
 
@@ -97,6 +98,10 @@ impl pallet_charge_session::Config for Test {
     type AuthorityId = pallet_charge_session::crypto::ChargerId;
 }
 
+impl pallet_tariff_manager::Config for Test {
+	type Event = Event;
+}
+
 impl frame_system::offchain::SigningTypes for Test {
     type Public = <Signature as Verify>::Signer;
     type Signature = Signature;
@@ -163,7 +168,7 @@ pub fn add_consent(user: Public) {
             Origin::signed(user),
             "iban".into(),
             "bic".into(),
-			"signature".into()
+            "signature".into()
         ));
     }
 }

@@ -30,6 +30,7 @@ frame_support::construct_runtime!(
     UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
     DID: pallet_did::{Module, Call, Storage, Event<T>},
     Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
+	TariffManager: pallet_tariff_manager::{Module, Call, Storage, Event<T>},
   }
 );
 
@@ -86,6 +87,10 @@ impl pallet_user_consent::Config for Test {
 
 impl pallet_registrar::Config for Test {
     type Event = Event;
+}
+
+impl pallet_tariff_manager::Config for Test {
+	type Event = Event;
 }
 
 impl pallet_did::Config for Test {
