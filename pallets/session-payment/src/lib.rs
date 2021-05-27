@@ -5,13 +5,12 @@ mod tests;
 
 use codec::{Decode, Encode};
 use core::convert::TryInto;
+use frame_support::traits::Currency;
 use pallet_timestamp as timestamp;
 use sp_std::prelude::*;
-use frame_support::traits::Currency;
-
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
-pub struct UserConsent<Moment> {
+pub struct PaymentConsent<Moment> {
     timestamp: Moment,
     iban: Vec<u8>,
     bic_code: Vec<u8>,
@@ -37,11 +36,9 @@ pub mod pallet {
     use pallet_registrar as registrar;
     use pallet_tariff_manager as tariff_manager;
     use pallet_user_consent as consent;
-	use sp_core::crypto::UncheckedFrom;
+    use sp_core::crypto::UncheckedFrom;
 
-
-
-	#[pallet::config]
+    #[pallet::config]
     #[pallet::disable_frame_system_supertrait_check]
     pub trait Config:
         frame_system::Config
@@ -52,7 +49,7 @@ pub mod pallet {
         + contracts::Config
     {
         type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
-	}
+    }
 
     #[pallet::pallet]
     #[pallet::generate_store(pub(super) trait Store)]
@@ -60,8 +57,8 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn user_consents)]
-    pub type UserConsents<T: Config> =
-        StorageMap<_, Blake2_128Concat, T::AccountId, UserConsent<T::Moment>>;
+    pub type PaymentConsents<T: Config> =
+        StorageMap<_, Blake2_128Concat, T::AccountId, PaymentConsent<T::Moment>>;
 
     #[pallet::storage]
     #[pallet::getter(fn user_payments)]
@@ -77,14 +74,14 @@ pub mod pallet {
         // PaymentProcessed(User, Timestamp, u128)
         PaymentProcessed(T::AccountId, T::Moment, u128),
         // UserConsentAdded(User, Timestamp, IBAN, bic)
-        UserConsentAdded(T::AccountId, T::Moment, Vec<u8>, Vec<u8>, Vec<u8>),
-		TariffRetrieved(Vec<u8>, u8),
+        PaymentConsentAdded(T::AccountId, T::Moment, Vec<u8>, Vec<u8>, Vec<u8>),
+        TariffRetrieved(Vec<u8>, u8),
     }
 
     #[pallet::error]
     pub enum Error<T> {
         NoConsentForPayment,
-        UserConsentRefused,
+        PaymentConsentRefused,
         NoTariff,
         PaymentError,
     }
@@ -114,9 +111,9 @@ pub mod pallet {
             vec.push((sender.clone(), signature.clone()));
             AllowedUsers::<T>::put(vec);
 
-            UserConsents::<T>::insert(
+            PaymentConsents::<T>::insert(
                 &sender,
-                UserConsent {
+                PaymentConsent {
                     timestamp: now,
                     iban: iban.clone(),
                     bic_code: bic_code.clone(),
@@ -125,36 +122,34 @@ pub mod pallet {
             );
 
             // Fire event
-            Self::deposit_event(Event::UserConsentAdded(
+            Self::deposit_event(Event::PaymentConsentAdded(
                 sender, now, iban, bic_code, signature,
             ));
 
             Ok(().into())
         }
 
+        /*		#[pallet::weight(1_000)]
+        pub fn process_tariff(
+            origin: OriginFor<T>,
+        ) -> DispatchResultWithPostInfo {
+            let sender = ensure_signed(origin)?;
 
-/*		#[pallet::weight(1_000)]
-		pub fn process_tariff(
-			origin: OriginFor<T>,
-		) -> DispatchResultWithPostInfo {
-			let sender = ensure_signed(origin)?;
+            let tariff_contract_adr =
+                match <tariff_manager::Module<T>>::get_tariff(Vec::from("fixed_price")) {
+                    None => return Err(Error::<T>::NoTariff.into()),
+                    Some(contract_adr) => contract_adr,
+                };
 
-			let tariff_contract_adr =
-				match <tariff_manager::Module<T>>::get_tariff(Vec::from("fixed_price")) {
-					None => return Err(Error::<T>::NoTariff.into()),
-					Some(contract_adr) => contract_adr,
-				};
+            let min_balance = <T as pallet_contracts::Config>::Currency::minimum_balance();
+            let mut call = CallData::new( Selector::from_str("get_price") );
+            //let input_data = call.to_bytes().to_vec();
+            let input_data = Vec::from("");
+            let _result = <contracts::Module<T>>::bare_call(sender.clone(), tariff_contract_adr, min_balance, u64::MAX, input_data);
+            Self::deposit_event(Event::TariffRetrieved(Vec::from("fixed_price"), 123));
 
-			let min_balance = <T as pallet_contracts::Config>::Currency::minimum_balance();
-			let mut call = CallData::new( Selector::from_str("get_price") );
-			//let input_data = call.to_bytes().to_vec();
-			let input_data = Vec::from("");
-			let _result = <contracts::Module<T>>::bare_call(sender.clone(), tariff_contract_adr, min_balance, u64::MAX, input_data);
-			Self::deposit_event(Event::TariffRetrieved(Vec::from("fixed_price"), 123));
-
-			Ok(().into())
-		}*/
-
+            Ok(().into())
+        }*/
 
         #[pallet::weight(1_000)]
         pub fn process_payment(
@@ -169,7 +164,6 @@ pub mod pallet {
 
             let now = <timestamp::Module<T>>::get();
 
-
             // Verify that there is a session_id corresponding
             let debtor = match <consent::Module<T>>::get_consent_from_session_id(session_id) {
                 None => return Err(Error::<T>::NoConsentForPayment.into()),
@@ -183,7 +177,7 @@ pub mod pallet {
             };
 
             // Validate that a request exists for this user & charger
-            let consent = UserConsents::<T>::get(&debtor);
+            let consent = PaymentConsents::<T>::get(&debtor);
             let (iban, bic_code) = match consent {
                 None => return Err(Error::<T>::NoConsentForPayment.into()),
                 Some(consent) => (consent.iban, consent.bic_code),
@@ -193,7 +187,7 @@ pub mod pallet {
             // For instance, we consider a fixed price of 0,15 €/kwh
             // Price in in cents
 
-			let current_price = <tariff_manager::Module<T>>::get_current_price();
+            let current_price = <tariff_manager::Module<T>>::get_current_price();
             let amount = kwh * current_price;
 
             // TODO: Execute payment
@@ -219,7 +213,7 @@ pub mod pallet {
         pub fn is_allowed_to_pay(origin: OriginFor<T>) -> DispatchResultWithPostInfo {
             let sender = ensure_signed(origin)?;
             // Validate that a request exists for this user & charger
-            match UserConsents::<T>::get(&sender) {
+            match PaymentConsents::<T>::get(&sender) {
                 None => Err(Error::<T>::NoConsentForPayment.into()),
                 Some(_consent) => Ok(().into()),
             }
@@ -228,7 +222,7 @@ pub mod pallet {
 
     impl<T: Config> Pallet<T> {
         pub fn has_consent(who: &T::AccountId) -> bool {
-            UserConsents::<T>::get(who).is_some()
+            PaymentConsents::<T>::get(who).is_some()
         }
 
         pub fn nb_allowed() -> u32 {
@@ -239,7 +233,7 @@ pub mod pallet {
             let v = AllowedUsers::<T>::get();
             v.into_iter()
                 .map(|key| {
-                    let consent = match UserConsents::<T>::get(key.0.clone()) {
+                    let consent = match PaymentConsents::<T>::get(key.0.clone()) {
                         Some(cs) => cs.iban,
                         None => "".as_bytes().to_vec(),
                     };
@@ -247,6 +241,5 @@ pub mod pallet {
                 })
                 .collect()
         }
-
     }
 }
