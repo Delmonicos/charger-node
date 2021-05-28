@@ -3,7 +3,7 @@ authors = ['adetante <antoine.detante@gmail.com>', 'fcroiseaux <fcroiseaux@gmail
 description = 'FRAME pallet for Delmonico'
 edition = '2018'
 license = 'Unlicense'
-name = 'pallet-user-consent'
+name = 'pallet-charge-consent'
 version = '1.0.0'
 
 [package.metadata.docs.rs]

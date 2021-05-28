@@ -28,7 +28,7 @@ pub mod pallet {
 
     #[pallet::storage]
     #[pallet::getter(fn user_consent)]
-    pub type UserConsent<T: Config> =
+    pub type ChargeConsent<T: Config> =
         StorageMap<_, Blake2_128Concat, T::Hash, SessionConsent<T::AccountId, T::AccountId>>;
 
     #[pallet::event]
@@ -53,7 +53,7 @@ pub mod pallet {
             // TODO: check that charger is a charger (using membership pallet!)
 
             // Add the request to the storage with current timestamp
-            UserConsent::<T>::insert(
+            ChargeConsent::<T>::insert(
                 &session_id,
                 SessionConsent {
                     user_id: sender.clone(),
@@ -71,7 +71,7 @@ pub mod pallet {
         pub fn get_consent_from_session_id(
             session_id: T::Hash,
         ) -> Option<SessionConsent<T::AccountId, T::AccountId>> {
-            UserConsent::<T>::get(&session_id)
+            ChargeConsent::<T>::get(&session_id)
         }
     }
 }

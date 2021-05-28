@@ -49,8 +49,8 @@ pub use pallet_charge_session;
 /// Import the session-payment pallet.
 pub use pallet_session_payment;
 
-/// The user-consent pallet
-pub use pallet_user_consent;
+/// The charge-consent pallet
+pub use pallet_charge_consent;
 
 /// The tariff-manager pallet
 pub use pallet_tariff_manager;
@@ -338,7 +338,7 @@ impl pallet_sudo::Config for Runtime {
     type Call = Call;
 }
 
-impl pallet_user_consent::Config for Runtime {
+impl pallet_charge_consent::Config for Runtime {
     type Event = Event;
 }
 
@@ -443,7 +443,7 @@ construct_runtime!(
         Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
         Contracts: pallet_contracts::{Module, Call, Config<T>, Storage, Event<T>},
         TariffManager: pallet_tariff_manager::{Module, Call, Storage, Event<T>},
-        UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
+        ChargeConsent: pallet_charge_consent::{Module, Call, Storage, Event<T>},
         ChargeSession: pallet_charge_session::{Module, Call, Config<T>, Storage, Event<T>},
         SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
         DID: pallet_did::{Module, Call, Storage, Event<T>},

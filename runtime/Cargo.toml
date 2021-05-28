@@ -26,7 +26,7 @@ serde = { features = ['derive'], optional = true, version = '1.0.119' }
 
 # local dependencies
 pallet-charge-session = { path = '../pallets/charge-session', default-features = false, version = '1.0.0' }
-pallet-user-consent = { path = '../pallets/user-consent', default-features = false, version = '1.0.0' }
+pallet-charge-consent = { path = '../pallets/charge-consent', default-features = false, version = '1.0.0' }
 pallet-session-payment = { path = '../pallets/session-payment', default-features = false, version = '1.0.0' }
 pallet-tariff-manager = { path = '../pallets/tariff-manager', default-features = false, version = '1.0.0' }
 

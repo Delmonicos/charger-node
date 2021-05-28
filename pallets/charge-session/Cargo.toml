@@ -20,7 +20,7 @@ frame-support = { default-features = false, version = '3.0.0' }
 frame-system = { default-features = false, version = '3.0.0' }
 pallet-timestamp = { default-features = false, version = '3.0.0' }
 pallet-registrar = { path = '../registrar', default-features = false, version = '3.0.0' }
-pallet-user-consent = { path = '../user-consent', default-features = false, version = '1.0.0' }
+pallet-charge-consent = { path = '../charge-consent', default-features = false, version = '1.0.0' }
 pallet-session-payment = { path = '../session-payment', default-features = false, version = '1.0.0' }
 pallet-tariff-manager = { path = '../tariff-manager', default-features = false, version = '1.0.0' }
 charger-service = { path = '../../charger-service', default-features = false }

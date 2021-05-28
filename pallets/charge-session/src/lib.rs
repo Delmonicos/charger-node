@@ -57,7 +57,7 @@ pub mod pallet {
     };
     use pallet_registrar as registrar;
     use pallet_timestamp as timestamp;
-    use pallet_user_consent as consent;
+    use pallet_charge_consent as consent;
     use sp_runtime::{
         traits::{Hash, IdentifyAccount},
         RuntimeAppPublic,
@@ -204,7 +204,7 @@ pub mod pallet {
             // Generate a new session_id
             let session_id = Self::generate_charge_id(&sender, &charger);
 
-            // Store the user consent
+            // Store the charge consent
             <consent::Module<T>>::new_consent_for_user(
                 origin,
                 charger.clone(),
@@ -290,7 +290,7 @@ pub mod pallet {
 
             // Execute the payment
 			// TODO Uncomment the following code to execute the payment
-/*            match <pallet_session_payment::Module<T>>::process_payment(
+            match <pallet_session_payment::Module<T>>::process_payment(
                 origin,
                 session.session_id,
                 kwh.into(),
@@ -305,7 +305,7 @@ pub mod pallet {
                     );
                 }
                 _ => {}
-            }*/
+            }
 
             // Emit an event
             Self::deposit_event(Event::SessionEnded(

@@ -27,7 +27,7 @@ frame_support::construct_runtime!(
     System: frame_system::{Module, Call, Config, Storage, Event<T>},
     Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
     SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
-    UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
+    ChargeConsent: pallet_charge_consent::{Module, Call, Storage, Event<T>},
     DID: pallet_did::{Module, Call, Storage, Event<T>},
     Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
 	TariffManager: pallet_tariff_manager::{Module, Call, Storage, Event<T>},
@@ -81,7 +81,7 @@ impl pallet_session_payment::Config for Test {
     type Event = Event;
 }
 
-impl pallet_user_consent::Config for Test {
+impl pallet_charge_consent::Config for Test {
     type Event = Event;
 }
 

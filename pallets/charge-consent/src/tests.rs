@@ -1,4 +1,4 @@
-use crate as pallet_user_consent;
+use crate as pallet_charge_consent;
 
 use frame_support::{assert_err, assert_ok};
 use sp_core::{sr25519::Signature, H256};
@@ -27,7 +27,7 @@ frame_support::construct_runtime!(
   {
     System: frame_system::{Module, Call, Config, Storage, Event<T>},
     Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
-    UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
+    ChargeConsent: pallet_charge_consent::{Module, Call, Storage, Event<T>},
   }
 );
 
@@ -74,7 +74,7 @@ impl pallet_timestamp::Config for Test {
     type WeightInfo = ();
 }
 
-impl pallet_user_consent::Config for Test {
+impl pallet_charge_consent::Config for Test {
     type Event = Event;
 }
 
@@ -96,7 +96,7 @@ fn should_register_new_consent() {
             "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
         ));
         let session_id = <Test as frame_system::Config>::Hashing::hash(&user);
-        assert_ok!(UserConsent::new_consent_for_user(
+        assert_ok!(ChargeConsent::new_consent_for_user(
             Origin::signed(user),
             charger,
             session_id
@@ -114,8 +114,8 @@ fn should_find_consent_from_id() {
             "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
         ));
         let session_id = <Test as frame_system::Config>::Hashing::hash(&user);
-        UserConsent::new_consent_for_user(Origin::signed(user), charger, session_id);
-        assert!(UserConsent::get_consent_from_session_id(session_id).is_some());
+        ChargeConsent::new_consent_for_user(Origin::signed(user), charger, session_id);
+        assert!(ChargeConsent::get_consent_from_session_id(session_id).is_some());
     });
 }
 
@@ -126,6 +126,6 @@ fn should_not_find_consent_from_id() {
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
         let session_id = <Test as frame_system::Config>::Hashing::hash(&user);
-        assert!(UserConsent::get_consent_from_session_id(session_id).is_none());
+        assert!(ChargeConsent::get_consent_from_session_id(session_id).is_none());
     });
 }

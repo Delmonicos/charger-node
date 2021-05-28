@@ -832,6 +832,7 @@ dependencies = [
  "hex-literal",
  "pallet-aura",
  "pallet-balances",
+ "pallet-charge-consent",
  "pallet-charge-session",
  "pallet-contracts",
  "pallet-contracts-primitives",
@@ -846,7 +847,6 @@ dependencies = [
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
- "pallet-user-consent",
  "parity-scale-codec 2.1.1",
  "serde",
  "session-payment-runtime-api",
@@ -3910,6 +3910,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-charge-consent"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "hex-literal",
+ "pallet-timestamp",
+ "parity-scale-codec 2.1.1",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "pallet-charge-session"
 version = "1.0.0"
 dependencies = [
@@ -3917,12 +3932,12 @@ dependencies = [
  "frame-support",
  "frame-system",
  "hex-literal",
+ "pallet-charge-consent",
  "pallet-did",
  "pallet-registrar",
  "pallet-session-payment",
  "pallet-tariff-manager",
  "pallet-timestamp",
- "pallet-user-consent",
  "parity-scale-codec 2.1.1",
  "serde",
  "sp-core",
@@ -4105,11 +4120,11 @@ dependencies = [
  "frame-support",
  "frame-system",
  "hex-literal",
+ "pallet-charge-consent",
  "pallet-did",
  "pallet-registrar",
  "pallet-tariff-manager",
  "pallet-timestamp",
- "pallet-user-consent",
  "parity-scale-codec 2.1.1",
  "serde",
  "sp-core",
@@ -4212,21 +4227,6 @@ dependencies = [
  "pallet-transaction-payment",
  "parity-scale-codec 2.1.1",
  "sp-api",
- "sp-runtime",
-]
-
-[[package]]
-name = "pallet-user-consent"
-version = "1.0.0"
-dependencies = [
- "frame-support",
- "frame-system",
- "hex-literal",
- "pallet-timestamp",
- "parity-scale-codec 2.1.1",
- "serde",
- "sp-core",
- "sp-io",
  "sp-runtime",
 ]
 

@@ -23,7 +23,7 @@ frame_support::construct_runtime!(
   {
     System: frame_system::{Module, Call, Config, Storage, Event<T>},
     Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
-    UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
+    ChargeConsent: pallet_charge_consent::{Module, Call, Storage, Event<T>},
     ChargeSession: pallet_charge_session::{Module, Call, Storage, Event<T>},
     DID: pallet_did::{Module, Call, Storage, Event<T>},
     Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
@@ -85,7 +85,7 @@ impl pallet_did::Config for Test {
     type Time = Timestamp;
 }
 
-impl pallet_user_consent::Config for Test {
+impl pallet_charge_consent::Config for Test {
     type Event = Event;
 }
 
@@ -487,7 +487,7 @@ fn should_reject_end_session_for_unregistered_charger() {
 }
 
 #[test]
-fn should_store_user_consent() {
+fn should_store_charge_consent() {
     new_test_ext().execute_with(|| {
         let user = Public::from_raw(hex!(
             "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
@@ -503,7 +503,7 @@ fn should_store_user_consent() {
         let request = ChargeSession::user_requests(charger).expect("no user request");
         let session_id = request.session_id;
 
-        let consent = UserConsent::user_consent(session_id).expect("no user consent");
+        let consent = ChargeConsent::user_consent(session_id).expect("no user consent");
 
         assert_eq!(consent.charger_id, charger);
         assert_eq!(consent.user_id, user);

@@ -34,7 +34,7 @@ pub mod pallet {
     use frame_system::pallet_prelude::*;
     use pallet_registrar as registrar;
     use pallet_tariff_manager as tariff_manager;
-    use pallet_user_consent as consent;
+    use pallet_charge_consent as consent;
     use sp_core::crypto::UncheckedFrom;
 
     #[pallet::config]
@@ -88,11 +88,7 @@ pub mod pallet {
     impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {}
 
     #[pallet::call]
-    impl<T: Config> Pallet<T>
-    where
-        T::AccountId: UncheckedFrom<T::Hash>,
-        T::AccountId: AsRef<[u8]>,
-    {
+    impl<T: Config> Pallet<T> {
         #[pallet::weight(1_000)]
         pub fn new_consent(
             origin: OriginFor<T>,
