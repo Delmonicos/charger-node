@@ -69,8 +69,8 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event<T: Config> {
-        // PaymentProcessed(User, Timestamp, u128)
-        PaymentProcessed(T::AccountId, T::Moment, u128),
+        // PaymentProcessed(User, Timestamp, u128, session_id)
+        PaymentProcessed(T::AccountId, T::Moment, u128, T::Hash),
         // UserConsentAdded(User, Timestamp, IBAN, bic)
         PaymentConsentAdded(T::AccountId, T::Moment, Vec<u8>, Vec<u8>, Vec<u8>),
         TariffRetrieved(Vec<u8>, u8),
@@ -197,7 +197,7 @@ pub mod pallet {
                 },
             );
             // Emit an event
-            Self::deposit_event(Event::PaymentProcessed(debtor, now, amount));
+            Self::deposit_event(Event::PaymentProcessed(debtor, now, amount, session_id));
 
             Ok(().into())
         }
