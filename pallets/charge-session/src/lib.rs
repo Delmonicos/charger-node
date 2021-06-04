@@ -138,8 +138,8 @@ pub mod pallet {
         SessionRequested(T::AccountId, T::AccountId, T::Moment, T::Hash),
         /// SessionStarted(User, Charger, Timestamp, SessionId)
         SessionStarted(T::AccountId, T::AccountId, T::Moment, T::Hash),
-        /// SessionEnded(User, Charger, Timestamp, SessionId, kwh)
-        SessionEnded(T::AccountId, T::AccountId, T::Moment, T::Hash, u64),
+        /// SessionEnded(User, Charger, StartedAt, EndedAt, SessionId, kwh)
+        SessionEnded(T::AccountId, T::AccountId, T::Moment, T::Moment, T::Hash, u64),
         // NewChargerAdded(AddedBy, ChargerId, Location)
         NewChargerAdded(T::AccountId, T::AccountId, Vec<u8>),
     }
@@ -296,7 +296,7 @@ pub mod pallet {
 
             // Remove the request from storage
             let session = ActiveSessions::<T>::take(&sender).expect("Cannot be None");
-
+            
             // Execute the payment
 			// TODO Uncomment the following code to execute the payment
             match <pallet_session_payment::Module<T>>::process_payment(
@@ -320,6 +320,7 @@ pub mod pallet {
             Self::deposit_event(Event::SessionEnded(
                 user,
                 sender,
+                session.started_at,
                 now,
                 session.session_id,
                 kwh,
