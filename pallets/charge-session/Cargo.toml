@@ -23,6 +23,7 @@ pallet-registrar = { path = '../registrar', default-features = false, version = 
 pallet-charge-consent = { path = '../charge-consent', default-features = false, version = '1.0.0' }
 pallet-session-payment = { path = '../session-payment', default-features = false, version = '1.0.0' }
 pallet-tariff-manager = { path = '../tariff-manager', default-features = false, version = '1.0.0' }
+pallet-did = { git = "https://github.com/Delmonicos/pallet-did", default-features = false}
 charger-service = { path = '../../charger-service', default-features = false }
 sp-runtime = { default-features = false, version = '3.0.0' }
 sp-core = { default-features = false, version = '3.0.0' }

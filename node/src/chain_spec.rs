@@ -172,17 +172,14 @@ fn testnet_genesis(
             },
         }),
         pallet_charge_session: Some(ChargeSessionConfig {
-            organization_account: charger_organization_account.clone(),
+            charger_organization: charger_organization_account.clone(),
         }),
         pallet_registrar: Some(RegistrarConfig {
             orgs: vec![(
                 charger_organization_account.clone(),
                 "chargers".as_bytes().to_vec(),
             )],
-            members: vec![(
-                charger_organization_account,
-                vec![get_account_id_from_seed::<sr25519::Public>("Bob")],
-            )],
+            members: vec![]
         }),
     }
 }
