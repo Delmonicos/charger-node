@@ -23,9 +23,15 @@ charger-service = { path = '../../charger-service', default-features = false }
 sp-runtime = { default-features = false, version = '3.0.0' }
 sp-core = { default-features = false, version = '3.0.0' }
 sp-std = { default-features = false, version = '3.0.0' }
-pallet-user-consent = { path = '../user-consent', default-features = false, version = '1.0.0' }
+sp-io = { default-features = false, version = '3.0.0' }
+# ink_env = { version = "3.0.0-rc3", default-features = false }
+pallet-charge-consent = { path = '../charge-consent', default-features = false, version = '1.0.0' }
+pallet-tariff-manager = { path = '../tariff-manager', default-features = false, version = '1.0.0' }
 pallet-registrar = { path = '../registrar', default-features = false, version = '3.0.0' }
-
+# Contracts specific packages
+# pallet-contracts = { default-features = false, version = '3.0.0' }
+serde = { default-features = false, version = "1.0.119", features = ['derive'] }
+serde_json = { default-features = false, version = "1.0.64", features = ['alloc'] }
 
 [dev-dependencies]
 serde = { version = "1.0.119" }

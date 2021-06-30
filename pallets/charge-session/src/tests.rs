@@ -2,6 +2,7 @@ use crate as pallet_charge_session;
 
 use frame_support::{assert_err, assert_ok, traits::GenesisBuild};
 use hex_literal::hex;
+use pallet_did::did::Did;
 use sp_core::{
     sr25519::{Public, Signature},
     H256,
@@ -23,11 +24,12 @@ frame_support::construct_runtime!(
   {
     System: frame_system::{Module, Call, Config, Storage, Event<T>},
     Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
-    UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
+    ChargeConsent: pallet_charge_consent::{Module, Call, Storage, Event<T>},
     ChargeSession: pallet_charge_session::{Module, Call, Storage, Event<T>},
     DID: pallet_did::{Module, Call, Storage, Event<T>},
     Registrar: pallet_registrar::{Module, Call, Storage, Event<T>},
     SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
+    TariffManager: pallet_tariff_manager::{Module, Call, Storage, Event<T>},
   }
 );
 
@@ -84,7 +86,7 @@ impl pallet_did::Config for Test {
     type Time = Timestamp;
 }
 
-impl pallet_user_consent::Config for Test {
+impl pallet_charge_consent::Config for Test {
     type Event = Event;
 }
 
@@ -95,6 +97,10 @@ impl pallet_session_payment::Config for Test {
 impl pallet_charge_session::Config for Test {
     type Event = Event;
     type AuthorityId = pallet_charge_session::crypto::ChargerId;
+}
+
+impl pallet_tariff_manager::Config for Test {
+	type Event = Event;
 }
 
 impl frame_system::offchain::SigningTypes for Test {
@@ -132,7 +138,7 @@ pub fn new_test_ext() -> TestExternalities {
         .build_storage::<Test>()
         .unwrap();
     pallet_charge_session::GenesisConfig::<Test> {
-        organization_account: Public::from_raw(hex!(
+        charger_organization: Public::from_raw(hex!(
             "fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"
         )),
     }
@@ -141,20 +147,31 @@ pub fn new_test_ext() -> TestExternalities {
     storage.into()
 }
 
-pub fn register_charger(charger: Public) {
-    let org_owner = Public::from_raw(hex!(
+pub fn register_charger(charger: Public, location: Vec<u8>) {
+    let admin = Public::from_raw(hex!(
         "fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"
     ));
-    if Registrar::organizations().contains(&org_owner) == false {
-        assert_ok!(Registrar::create_organization(
-            Origin::signed(org_owner),
-            "chargers".as_bytes().to_vec()
+    if DID::attribute_and_id(&charger, b"location").is_none() {
+        assert_ok!(DID::add_attribute(
+            Origin::signed(charger),
+            charger.clone(),
+            b"location".to_vec(),
+            location,
+            None,
         ));
     }
-    assert_ok!(Registrar::add_to_organization(
-        Origin::signed(org_owner),
-        charger
-    ));
+    if Registrar::organizations().contains(&admin) == false {
+        assert_ok!(Registrar::create_organization(
+            Origin::signed(admin),
+            b"chargers".to_vec()
+        ));
+    }
+    assert_ok!(
+        ChargeSession::add_new_charger(
+            Origin::signed(admin),
+            charger,
+        )
+    );
 }
 
 pub fn add_consent(user: Public) {
@@ -162,7 +179,8 @@ pub fn add_consent(user: Public) {
         assert_ok!(SessionPayment::new_consent(
             Origin::signed(user),
             "iban".into(),
-            "bic".into()
+            "bic".into(),
+            "signature".into()
         ));
     }
 }
@@ -176,7 +194,7 @@ fn should_create_new_request() {
         let charger = Public::from_raw(hex!(
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
-        register_charger(charger);
+        register_charger(charger, b"[1,2]".to_vec());
         add_consent(user);
 
         Timestamp::set_timestamp(999);
@@ -201,7 +219,7 @@ fn should_start_a_new_session() {
         let charger = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         add_consent(user);
 
         Timestamp::set_timestamp(999);
@@ -227,7 +245,7 @@ fn should_not_start_unrequested_session() {
         let charger = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         add_consent(user);
 
         assert_err!(
@@ -247,7 +265,7 @@ fn should_not_start_twice() {
         let charger = Public::from_raw(hex!(
             "44ce5dedab4604c5df7d46ebd146ff5773bfcd975f7203e4cbac45149593a865"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
@@ -271,8 +289,8 @@ fn should_not_take_request_from_another_charger() {
         let charger_2 = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
-        register_charger(charger_1);
-        register_charger(charger_2);
+        register_charger(charger_1, "[1,2]".as_bytes().to_vec());
+        register_charger(charger_2, "[1,2]".as_bytes().to_vec());
         add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger_2));
@@ -292,7 +310,7 @@ fn should_end_an_active_session() {
         let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
@@ -319,8 +337,8 @@ fn should_not_end_a_session_from_another_charger() {
         let charger_2 = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
-        register_charger(charger_1);
-        register_charger(charger_2);
+        register_charger(charger_1, "[1,2]".as_bytes().to_vec());
+        register_charger(charger_2, "[1,2]".as_bytes().to_vec());
         add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger_1));
@@ -349,7 +367,7 @@ fn should_reject_new_request_if_request_already_exists() {
         let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         add_consent(user_1);
         add_consent(user_2);
 
@@ -373,7 +391,7 @@ fn should_reject_new_request_if_charge_is_active() {
         let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         add_consent(user_1);
         add_consent(user_2);
 
@@ -401,7 +419,7 @@ fn should_chain_two_sessions() {
         let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         add_consent(user_1);
         add_consent(user_2);
 
@@ -481,7 +499,7 @@ fn should_reject_end_session_for_unregistered_charger() {
 }
 
 #[test]
-fn should_store_user_consent() {
+fn should_store_charge_consent() {
     new_test_ext().execute_with(|| {
         let user = Public::from_raw(hex!(
             "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
@@ -489,7 +507,7 @@ fn should_store_user_consent() {
         let charger = Public::from_raw(hex!(
             "e6687af66d6b3a191061c519033b50d86907eaa4c7961ed416a5dc3042346036"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         add_consent(user);
 
         assert_ok!(ChargeSession::new_request(Origin::signed(user), charger));
@@ -497,7 +515,7 @@ fn should_store_user_consent() {
         let request = ChargeSession::user_requests(charger).expect("no user request");
         let session_id = request.session_id;
 
-        let consent = UserConsent::user_consent(session_id).expect("no user consent");
+        let consent = ChargeConsent::user_consent(session_id).expect("no user consent");
 
         assert_eq!(consent.charger_id, charger);
         assert_eq!(consent.user_id, user);
@@ -513,10 +531,48 @@ fn should_reject_new_request_without_consent() {
         let charger = Public::from_raw(hex!(
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
-        register_charger(charger);
+        register_charger(charger, "[1,2]".as_bytes().to_vec());
         assert_err!(
             ChargeSession::new_request(Origin::signed(user), charger),
             pallet_charge_session::Error::<Test>::NoPaymentConsent
+        );
+    });
+}
+
+#[test]
+fn only_admin_can_register_new_charger() {
+    new_test_ext().execute_with(|| {
+        let charger = Public::from_raw(hex!(
+            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
+        ));
+        let non_admin = Public::from_raw(hex!(
+            "f0a0a685af36aa9f1f20ecb1a4559ba579fd6218c62bcf410f2026d2d66ece14"
+        ));
+        assert_err!(
+            ChargeSession::add_new_charger(
+                Origin::signed(non_admin),
+                charger,
+            ),
+            pallet_charge_session::Error::<Test>::NotAnAdmin
+        );
+    });
+}
+
+#[test]
+fn should_reject_chargers_without_location() {
+    new_test_ext().execute_with(|| {
+        let charger = Public::from_raw(hex!(
+            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
+        ));
+        let admin = Public::from_raw(hex!(
+            "fc349aca2d746555e2c13e7b48c2f543420eaec94c11b6d3dc80e66508e44148"
+        ));
+        assert_err!(
+            ChargeSession::add_new_charger(
+                Origin::signed(admin),
+                charger,
+            ),
+            pallet_charge_session::Error::<Test>::NoLocation
         );
     });
 }

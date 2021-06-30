@@ -56,22 +56,26 @@ pub mod pallet {
         pallet_prelude::*,
     };
     use pallet_registrar as registrar;
+    use pallet_did as did;
     use pallet_timestamp as timestamp;
-    use pallet_user_consent as consent;
+    use pallet_charge_consent as consent;
     use sp_runtime::{
         traits::{Hash, IdentifyAccount},
         RuntimeAppPublic,
     };
+    use sp_std::vec::Vec;
+    use pallet_did::did::Did;
 
-    #[pallet::genesis_config]
+
+	#[pallet::genesis_config]
     pub struct GenesisConfig<T: Config> {
-        pub organization_account: T::AccountId,
+        pub charger_organization: T::AccountId,
     }
 
     #[pallet::genesis_build]
     impl<T: Config> GenesisBuild<T> for GenesisConfig<T> {
         fn build(&self) {
-            <ChargerOrganization<T>>::put(&self.organization_account);
+            <ChargerOrganization<T>>::put(&self.charger_organization);
         }
     }
 
@@ -79,7 +83,7 @@ pub mod pallet {
     impl<T: Config> Default for GenesisConfig<T> {
         fn default() -> Self {
             Self {
-                organization_account: Default::default(),
+                charger_organization: Default::default(),
             }
         }
     }
@@ -90,6 +94,7 @@ pub mod pallet {
         frame_system::Config
         + CreateSignedTransaction<Call<Self>>
         + registrar::Config
+        + did::Config
         + timestamp::Config
         + consent::Config
         + pallet_session_payment::Config
@@ -133,17 +138,22 @@ pub mod pallet {
         SessionRequested(T::AccountId, T::AccountId, T::Moment, T::Hash),
         /// SessionStarted(User, Charger, Timestamp, SessionId)
         SessionStarted(T::AccountId, T::AccountId, T::Moment, T::Hash),
-        /// SessionEnded(User, Charger, Timestamp, SessionId, kwh)
-        SessionEnded(T::AccountId, T::AccountId, T::Moment, T::Hash, u64),
+        /// SessionEnded(User, Charger, StartedAt, EndedAt, SessionId, kwh)
+        SessionEnded(T::AccountId, T::AccountId, T::Moment, T::Moment, T::Hash, u64),
+        // NewChargerAdded(AddedBy, ChargerId, Location)
+        NewChargerAdded(T::AccountId, T::AccountId, Vec<u8>),
     }
 
     #[pallet::error]
     pub enum Error<T> {
+        NotAnAdmin,
+        NoLocation,
         NotRegisteredCharger,
         NoChargingRequest,
         NoChargingSession,
         ChargerIsBusy,
         NoPaymentConsent,
+        AlreadyRegisteredCharger,
     }
 
     #[pallet::hooks]
@@ -155,7 +165,8 @@ pub mod pallet {
     }
 
     #[pallet::call]
-    impl<T: Config> Pallet<T> {
+    impl<T: Config> Pallet<T>
+	{
         #[pallet::weight(1_000)]
         pub fn new_request(
             origin: OriginFor<T>,
@@ -202,7 +213,7 @@ pub mod pallet {
             // Generate a new session_id
             let session_id = Self::generate_charge_id(&sender, &charger);
 
-            // Store the user consent
+            // Store the charge consent
             <consent::Module<T>>::new_consent_for_user(
                 origin,
                 charger.clone(),
@@ -285,8 +296,9 @@ pub mod pallet {
 
             // Remove the request from storage
             let session = ActiveSessions::<T>::take(&sender).expect("Cannot be None");
-
+            
             // Execute the payment
+			// TODO Uncomment the following code to execute the payment
             match <pallet_session_payment::Module<T>>::process_payment(
                 origin,
                 session.session_id,
@@ -308,6 +320,7 @@ pub mod pallet {
             Self::deposit_event(Event::SessionEnded(
                 user,
                 sender,
+                session.started_at,
                 now,
                 session.session_id,
                 kwh,
@@ -315,23 +328,47 @@ pub mod pallet {
 
             Ok(().into())
         }
+
+        #[pallet::weight(1_000)]
+        pub fn add_new_charger(
+            origin: OriginFor<T>,
+            charger_id: T::AccountId,
+        ) -> DispatchResultWithPostInfo {
+            let sender = ensure_signed(origin.clone())?;
+            // Check that signer is admin (= owner of chargers organizaton)
+            ensure!(<pallet_did::Module<T>>::is_owner(&<ChargerOrganization<T>>::get(), &sender).is_ok(), Error::<T>::NotAnAdmin);
+            // Check that this charger is not already registered
+            ensure!(Self::is_charger(&charger_id) == false, Error::<T>::AlreadyRegisteredCharger);
+             match <pallet_did::Module<T>>::attribute_and_id(&charger_id, b"location") {
+                 // Check that charger has a location attribute
+                None =>  return Err(Error::<T>::NoLocation.into()),
+                Some(location) => {
+                    // Add charger to organization
+                    <pallet_registrar::Module<T>>::add_to_organization(origin.clone(), charger_id.clone())?;
+                    
+                    // Emit an event
+                    Self::deposit_event(Event::NewChargerAdded(sender, charger_id, location.0.value));
+                    Ok(().into())
+                }
+             }
+        }
     }
 
     impl<T: Config> Pallet<T> {
         fn process_charge_sessions() {
             // Get the list of charger accounts
-            let accounts = <T::AuthorityId as AppCrypto<
+            let accounts = <<T as Config>::AuthorityId as AppCrypto<
                 <T as SigningTypes>::Public,
                 <T as SigningTypes>::Signature,
             >>::RuntimeAppPublic::all()
             .into_iter()
             .map(|key| {
-                let generic_public = <T::AuthorityId as AppCrypto<
+                let generic_public = <<T as Config>::AuthorityId as AppCrypto<
                     <T as SigningTypes>::Public,
                     <T as SigningTypes>::Signature,
                 >>::GenericPublic::from(key);
                 let public: <T as SigningTypes>::Public = generic_public.into();
-                let signer = Signer::<T, T::AuthorityId>::all_accounts()
+                let signer = Signer::<T, <T as Config>::AuthorityId>::all_accounts()
                     .with_filter(sp_std::vec!(public.clone()));
                 (public.clone().into_account(), signer)
             });
@@ -410,7 +447,7 @@ pub mod pallet {
         }
 
         fn send_signed_transaction(
-            signer: &Signer<T, T::AuthorityId, frame_system::offchain::ForAll>,
+            signer: &Signer<T, <T as Config>::AuthorityId, frame_system::offchain::ForAll>,
             call: Call<T>,
         ) -> Result<(), ()> {
             match signer.send_signed_transaction(|_| call.clone()).as_slice() {

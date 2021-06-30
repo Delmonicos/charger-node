@@ -1,5 +1,5 @@
 use charger_node_runtime::{
-    AccountId, AuraConfig, BalancesConfig, ChargeSessionConfig, ContractsConfig, GenesisConfig,
+    AccountId, AuraConfig, BalancesConfig, ChargeSessionConfig, SessionPaymentConfig, ContractsConfig, GenesisConfig,
     GrandpaConfig, RegistrarConfig, Signature, SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
@@ -59,9 +59,15 @@ pub fn development_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Bob"),
                     get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
                     get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
+                    get_account_id_from_seed::<sr25519::Public>("Charlie"),
+                    get_account_id_from_seed::<sr25519::Public>("Dave"),
+                    get_account_id_from_seed::<sr25519::Public>("Ferdie"),
+                    get_account_id_from_seed::<sr25519::Public>("Eve"),
                 ],
                 true,
-                get_account_id_from_seed::<sr25519::Public>("Alice"),
+                get_account_id_from_seed::<sr25519::Public>("Charlie"),
+                get_account_id_from_seed::<sr25519::Public>("Dave"),
+                get_account_id_from_seed::<sr25519::Public>("Eve"),
             )
         },
         // Bootnodes
@@ -113,7 +119,9 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                     get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
                 ],
                 true,
-                get_account_id_from_seed::<sr25519::Public>("Alice"),
+                get_account_id_from_seed::<sr25519::Public>("Charlie"),
+                get_account_id_from_seed::<sr25519::Public>("Dave"),
+                get_account_id_from_seed::<sr25519::Public>("Eve"),
             )
         },
         // Bootnodes
@@ -137,6 +145,8 @@ fn testnet_genesis(
     endowed_accounts: Vec<AccountId>,
     enable_println: bool,
     charger_organization_account: AccountId,
+    payment_validator_organization_account: AccountId,
+    payment_validator_account: AccountId,
 ) -> GenesisConfig {
     GenesisConfig {
         frame_system: Some(SystemConfig {
@@ -172,17 +182,22 @@ fn testnet_genesis(
             },
         }),
         pallet_charge_session: Some(ChargeSessionConfig {
-            organization_account: charger_organization_account.clone(),
+            charger_organization: charger_organization_account.clone(),
+        }),
+        pallet_session_payment: Some(SessionPaymentConfig {
+            payment_validator_organization: payment_validator_organization_account.clone(),
         }),
         pallet_registrar: Some(RegistrarConfig {
-            orgs: vec![(
-                charger_organization_account.clone(),
-                "chargers".as_bytes().to_vec(),
-            )],
-            members: vec![(
-                charger_organization_account,
-                vec![get_account_id_from_seed::<sr25519::Public>("Bob")],
-            )],
+            orgs: vec![
+                // Create "chargers" organization: list of authorized chargers
+                ( charger_organization_account.clone(), "chargers".as_bytes().to_vec() ),
+                // Create "payment_validators" organization: list of offchain worker accounts allowed to complete payments
+                ( payment_validator_organization_account.clone(), "payment_validators".as_bytes().to_vec() )
+            ],
+            members: vec![
+                // Add the first offchain worker account to "payment_validators" organization
+                ( payment_validator_organization_account.clone(), vec![payment_validator_account] )
+            ]
         }),
     }
 }

@@ -1,12 +1,11 @@
-use crate as pallet_user_consent;
+use crate as pallet_tariff_manager;
 
 use frame_support::{assert_err, assert_ok};
 use sp_core::{sr25519::Signature, H256};
 use sp_io::TestExternalities;
-
 use sp_runtime::{
     testing::{Header, TestXt},
-    traits::{BlakeTwo256, Hash, IdentifyAccount, IdentityLookup, Verify},
+    traits::{BlakeTwo256, Extrinsic as ExtrinsicT, Hash, IdentifyAccount, IdentityLookup, Verify},
 };
 
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
@@ -27,7 +26,7 @@ frame_support::construct_runtime!(
   {
     System: frame_system::{Module, Call, Config, Storage, Event<T>},
     Timestamp: pallet_timestamp::{Module, Call, Storage, Inherent},
-    UserConsent: pallet_user_consent::{Module, Call, Storage, Event<T>},
+    TariffManager: pallet_tariff_manager::{Module, Call, Storage, Event<T>},
   }
 );
 
@@ -74,7 +73,7 @@ impl pallet_timestamp::Config for Test {
     type WeightInfo = ();
 }
 
-impl pallet_user_consent::Config for Test {
+impl pallet_tariff_manager::Config for Test {
     type Event = Event;
 }
 
@@ -83,49 +82,47 @@ impl frame_system::offchain::SigningTypes for Test {
     type Signature = Signature;
 }
 
+type Extrinsic = TestXt<Call, ()>;
+type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
+
+impl<LocalCall> frame_system::offchain::SendTransactionTypes<LocalCall> for Test
+where
+    Call: From<LocalCall>,
+{
+    type OverarchingCall = Call;
+    type Extrinsic = Extrinsic;
+}
+
+impl<LocalCall> frame_system::offchain::CreateSignedTransaction<LocalCall> for Test
+where
+    Call: From<LocalCall>,
+{
+    fn create_transaction<C: frame_system::offchain::AppCrypto<Self::Public, Self::Signature>>(
+        call: Call,
+        _public: <Signature as Verify>::Signer,
+        _account: AccountId,
+        nonce: u64,
+    ) -> Option<(Call, <Extrinsic as ExtrinsicT>::SignaturePayload)> {
+        Some((call, (nonce, ())))
+    }
+}
+
 use hex_literal::hex;
 use sp_core::sr25519::Public;
 
 #[test]
-fn should_register_new_consent() {
+fn should_register_new_tariff() {
     new_test_ext().execute_with(|| {
         let user = Public::from_raw(hex!(
             "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
         ));
-        let charger = Public::from_raw(hex!(
-            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
+        let smart_contract = Public::from_raw(hex!(
+            "8ff2ad81f54d09f503d8abc01fc6e50d34e5ad8c5784a284faf453475a328ca9"
         ));
-        let session_id = <Test as frame_system::Config>::Hashing::hash(&user);
-        assert_ok!(UserConsent::new_consent_for_user(
+        assert_ok!(TariffManager::new_tariff(
             Origin::signed(user),
-            charger,
-            session_id
+            Vec::from("fixed_price"),
+            smart_contract,
         ));
-    });
-}
-
-#[test]
-fn should_find_consent_from_id() {
-    new_test_ext().execute_with(|| {
-        let user = Public::from_raw(hex!(
-            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
-        ));
-        let charger = Public::from_raw(hex!(
-            "bec4ab0eaff1a0d710274b3648bc5b2253e2bdee293987123962688f08a5c317"
-        ));
-        let session_id = <Test as frame_system::Config>::Hashing::hash(&user);
-        UserConsent::new_consent_for_user(Origin::signed(user), charger, session_id);
-        assert!(UserConsent::get_consent_from_session_id(session_id).is_some());
-    });
-}
-
-#[test]
-fn should_not_find_consent_from_id() {
-    new_test_ext().execute_with(|| {
-        let user = Public::from_raw(hex!(
-            "9a75da2249c660ca3c6bc5f7ff925ffbbbf5332fa09ab1e0540d748570c8ce27"
-        ));
-        let session_id = <Test as frame_system::Config>::Hashing::hash(&user);
-        assert!(UserConsent::get_consent_from_session_id(session_id).is_none());
     });
 }
