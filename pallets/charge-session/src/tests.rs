@@ -92,6 +92,7 @@ impl pallet_charge_consent::Config for Test {
 
 impl pallet_session_payment::Config for Test {
     type Event = Event;
+    type AuthorityId = pallet_session_payment::crypto::PaymentValidatorId;
 }
 
 impl pallet_charge_session::Config for Test {

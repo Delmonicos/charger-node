@@ -33,7 +33,10 @@ pub mod pallet {
         StorageMap<_, Blake2_128Concat, Vec<u8>, T::AccountId>;
 
 	#[pallet::storage]
-	pub type CurrentPrice<T: Config> = StorageValue<_, u128, ValueQuery>;
+	pub type CurrentPrice<T: Config> = StorageValue<_, u128, ValueQuery, DefaultCurrentPrice>;
+
+    #[pallet::type_value]
+    pub fn DefaultCurrentPrice() -> u128 { 15 }
 
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]

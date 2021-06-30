@@ -349,6 +349,7 @@ impl pallet_charge_session::Config for Runtime {
 
 impl pallet_session_payment::Config for Runtime {
     type Event = Event;
+    type AuthorityId = pallet_session_payment::crypto::PaymentValidatorId;
 }
 
 impl pallet_tariff_manager::Config for Runtime {
@@ -445,7 +446,7 @@ construct_runtime!(
         TariffManager: pallet_tariff_manager::{Module, Call, Storage, Event<T>},
         ChargeConsent: pallet_charge_consent::{Module, Call, Storage, Event<T>},
         ChargeSession: pallet_charge_session::{Module, Call, Config<T>, Storage, Event<T>},
-        SessionPayment: pallet_session_payment::{Module, Call, Storage, Event<T>},
+        SessionPayment: pallet_session_payment::{Module, Call, Config<T>, Storage, Event<T>},
         DID: pallet_did::{Module, Call, Storage, Event<T>},
         Registrar: pallet_registrar::{Module, Call, Config<T>, Storage, Event<T>}
     }

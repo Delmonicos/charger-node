@@ -357,18 +357,18 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         fn process_charge_sessions() {
             // Get the list of charger accounts
-            let accounts = <T::AuthorityId as AppCrypto<
+            let accounts = <<T as Config>::AuthorityId as AppCrypto<
                 <T as SigningTypes>::Public,
                 <T as SigningTypes>::Signature,
             >>::RuntimeAppPublic::all()
             .into_iter()
             .map(|key| {
-                let generic_public = <T::AuthorityId as AppCrypto<
+                let generic_public = <<T as Config>::AuthorityId as AppCrypto<
                     <T as SigningTypes>::Public,
                     <T as SigningTypes>::Signature,
                 >>::GenericPublic::from(key);
                 let public: <T as SigningTypes>::Public = generic_public.into();
-                let signer = Signer::<T, T::AuthorityId>::all_accounts()
+                let signer = Signer::<T, <T as Config>::AuthorityId>::all_accounts()
                     .with_filter(sp_std::vec!(public.clone()));
                 (public.clone().into_account(), signer)
             });
@@ -447,7 +447,7 @@ pub mod pallet {
         }
 
         fn send_signed_transaction(
-            signer: &Signer<T, T::AuthorityId, frame_system::offchain::ForAll>,
+            signer: &Signer<T, <T as Config>::AuthorityId, frame_system::offchain::ForAll>,
             call: Call<T>,
         ) -> Result<(), ()> {
             match signer.send_signed_transaction(|_| call.clone()).as_slice() {
