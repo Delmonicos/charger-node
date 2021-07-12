@@ -2,6 +2,14 @@
 
 This document contains a guide for testing the application in the scope of milestone 2.
 
+## Unit tests
+
+All unit tests specific to Delmonicos are in a dedicated `tests` module. 
+So we can use the 'tests' filter to execute only Delmonicos-related unit tests:
+
+```
+cargo test 'tests'
+```
 ## Accounts
 
 5 accounts will be used in this scenario:
