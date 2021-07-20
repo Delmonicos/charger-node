@@ -1,4 +1,4 @@
-#How blockchain can ease electromobility
+# How blockchain can ease electromobility
 
 Electromobility is essential element in energy transition and sustainable city, and it is an unmissable element in transport sector evolution. Electromobility allows the synergy between ecological, social, and technical values. 
 Europe have a strong will to support and help the electric car market development. Thanks to European Government actions it is now commonly accepted that only electric vehicles will be sold by vendors in few years.
@@ -7,7 +7,7 @@ Therefore, facilitate electromobility development will pass by optimizing infras
 
 At Delmonicos, we are convinced that blockchain technology can ease electromobility adoption by optimizing the charging process while enhancing security and simplifying the user experience. 
 
-##An immature ecosystem
+## An immature ecosystem
 As reflected by the following schema (Figure 1), most people think charging process of an electric vehicle is quite straightforward: 
 You connect the charging station to the vehicle 
 You start the charging process and then confirm that you are ok to use this station to charge your vehicle 
@@ -29,7 +29,7 @@ More than understanding the entire electric charging process, it is important to
 
 To help all these actors to communicate together, some standards have been set up to manage the electromobility ecosystem.
 
-##Current standards
+## Current standards
 Every distributed system has at least one protocol that define the common language, also called standard. This language is used by each actor to communicate and exchange data and values. 
 
 In electromobility one of these standards is Protocol OCPP (Open Charge Point Protocol) which allows the communication between electric vehicle charging stations and their operator's computer system. 
@@ -37,7 +37,7 @@ Another standard is the ISO 15118 which aims to improve the electromobility ec
 
 With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the submentionned standards and open to any kind of payment. 
 
-##Delmonicos inside
+## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
 
 ![Delmonicos inside](./delmonicos_inside.png)
@@ -48,7 +48,7 @@ This solution will provide electric vehicle drivers an experience close to what 
 
 To achieve this challenge, Delmonicos is working on Blockchain technology based on the principle of trusted third parties and provides to our future users a new generation, simple and interconnected solution.
 
-##Why blockchain for electromobility?  
+## Why blockchain for electromobility?  
 
 As we have seen the main problem is related to the payment of the charging session. 
 We are developing and deploying an infrastructure dedicated to the supervision of charging station, strongly coupled with a micro-payment infrastructure. The main requirements of the solution are the following :
