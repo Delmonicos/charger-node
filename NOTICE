@@ -3,7 +3,7 @@ Copyright 2021 Delmonicos SAS
 
 This product includes software developed at web3 foundation by the Substrate Development team (https://web3.foundation/).
 
-The Initial Developer of the registrat pallet, is the substrate development team (https://substrate.dev/). The registrar pallet has been developed in the context of the substrate enterprise sample project (https://github.com/substrate-developer-hub/substrate-enterprise-sample).
+The Initial Developer of the registrar pallet, is the substrate development team (https://substrate.dev/). The registrar pallet has been developed in the context of the substrate enterprise sample project (https://github.com/substrate-developer-hub/substrate-enterprise-sample).
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this software except in compliance with the License.
