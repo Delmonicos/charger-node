@@ -7,8 +7,8 @@ Therefore, facilitate electromobility development will pass by optimizing infras
 
 At Delmonicos, we are convinced that blockchain technology can ease electromobility adoption by optimizing the charging process while enhancing security and simplifying the user experience. 
 
-## An immature ecosystem
-As reflected by the following schema (Figure 1), most people think charging process of an electric vehicle is quite straightforward: 
+## A complexe value chain carried out by a multitude of actors
+As reflected by the following schema (Figure 1), most people think charging process of an electric vehicle is quite straightforward: 
 You connect the charging station to the vehicle 
 You start the charging process and then confirm that you are ok to use this station to charge your vehicle 
 When you want to stop, you unplug the cable, the price is calculated, and a payment is executed from the client bank account to the station owner bank account
@@ -23,9 +23,13 @@ As we can see in the Figure 2, reality is far more complex. Multiple actors are 
 
 More than understanding the entire electric charging process, it is important to identify each actors and explain their roles: 
 
-* **CPO** (Charge Point Operator) manages and supervises the infrastructure of charging stations, usually in public spaces. It can operate one or many charging infrastructure behalf of station owners or for its own account.
+* **CPO** (Charge Point Operator) manages and supervises the infrastructure of charging stations, usually in public spaces. It can operate one or many charging infrastructure behalf of station owners or for its own account. CPO uses **CPMS** (Charge Point Managing System), the software developped by **CPMS development company** used to manage and supervise the charging stations.
 * **eMSP** (eMobility Service Provider) is providing mobility services like giving access to charging stations to EV users. 
-* **Aggregator** is  a platform offering services that enable mobility operators to easily build partnerships. It develops the links between CPO and eMSP to enables electric mobility roaming. 
+* **Aggregator** is a platform offering services that enable mobility operators to easily build partnerships. It develops the links between CPO and eMSP to enables electric mobility roaming.
+
+Those three actors are the main ones, but there are other secondaries like **OEM Construtors** who builds Charging Points, **NSP** (Navigation Service Provider) who provides location information of Charge Points, **Integrators** who supports new players who want to setup their own Charge Station, ...
+
+Moreover, some actors take several roles like a CPO who can be eMSP and develop is own CPMS.
 
 To help all these actors to communicate together, some standards have been set up to manage the electromobility ecosystem.
 
