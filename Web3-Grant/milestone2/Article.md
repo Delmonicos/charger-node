@@ -44,7 +44,7 @@ In electromobility there are mainly 2 protocols that we can define as the standa
 **EVSE** (Electric Vehicle Supply Equipment) means equipment that delivers electrical energy from an electricity source to charge plug-in electric vehicle batteries (Charging Point, Chargin Station, Charging Dock, ...)
 **DSO** (Distribution System Operator) operates the electric power distribution system which delivers electricity
 
-## OCPP protocol
+### OCPP protocol
 
 Protocol OCPP (Open Charge Point Protocol) allows the communication between **EVSE** and **CPMS**. 
 
@@ -52,19 +52,19 @@ This protocol exists in two major versions 1.6 and 2.0.1. The 1.6 is the most us
 
 The common way to implement this protocol is to use a SecureWebSocket between the **EVSE** and the **CPMS** through a VPN (or HTTPS) for exchanging JSON messages.
 
-## OCPI protocol
+### OCPI protocol
 
 The OCPI protocol is used in two ways :
 - in replacement of the private protocols used by the aggregators to exchange with CPO
 - to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, because it's difficult to implement it for this purpose
 
-## ISO 15118 standard
+### ISO 15118 standard
 
 Another standard is the ISO 15118 which aims to improve the electromobility ecosystem. Its objective is to simplify EV drivers’ life, to allow energy optimization, to reduce costs and to strengthen (cyber) security. One part of ISO 15118 is named “Plug&Charge”, it allows the charging station to identify the user's service contract and automatically charge the vehicle only by plugin the EV to the station.
 
 With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the submentionned standards and open to any kind of payment. 
 
-## Delmonicos inside
+# Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
 
 ![Delmonicos inside](./delmonicos_inside.png)
