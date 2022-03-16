@@ -64,7 +64,7 @@ Another standard is the ISO 15118 which aims to improve the electromobility ec
 
 With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the submentionned standards and open to any kind of payment. 
 
-# Delmonicos inside
+## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
 
 ![Delmonicos inside](./delmonicos_inside.png)
@@ -75,7 +75,7 @@ This solution will provide electric vehicle drivers an experience close to what 
 
 To achieve this challenge, Delmonicos is working on Blockchain technology based on the principle of trusted third parties and provides to our future users a new generation, simple and interconnected solution.
 
-## Why blockchain for electromobility?  
+### Why blockchain for electromobility?  
 
 As we have seen the main problem is related to the payment of the charging session. 
 We are developing and deploying an infrastructure dedicated to the supervision of charging station, strongly coupled with a micro-payment infrastructure. The main requirements of the solution are the following :
@@ -93,7 +93,7 @@ Taking into account the above-mentioned constraints, we have chosen to base our 
 * The trustless nature of the technology allows adding new network participants without compromising the security of other participants.
 * The deployment can be easy and secured if each charging station is also a network node.
 
-## Why Polkadot ?
+### Why Polkadot ?
 Finally, we chose Substrate/Polkadot because :
 
 * By having nodes with a dedicated purpose, we will be able to optimise the footprint of the node in order to deploy it to charging stations, that have limited available resources
