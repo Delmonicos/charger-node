@@ -62,7 +62,17 @@ The OCPI protocol is used in two ways :
 
 Another standard is the ISO 15118 which aims to improve the electromobility ecosystem. Its objective is to simplify EV drivers’ life, to allow energy optimization, to reduce costs and to strengthen (cyber) security. One part of ISO 15118 is named “Plug&Charge”, it allows the charging station to identify the user's service contract and automatically charge the vehicle only by plugin the EV to the station.
 
-With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the submentionned standards and open to any kind of payment. 
+Les axes d'amélioration de la norme ISO15118 sont multiples : 
+- proposer une implémentation concrète du Plug & Charge
+- proposer le smart charging permettant une gestion intelligente de la recharge qui va tenir compte de plusieurs paramètres pour programmer un planning de recharge 
+- bidirectionnal charging : v2h (vehicle to home), v2b (vehicle to building), v2g (vehicle to grid). La recharge bidirectionnel permet de réinjecter l'énergie de la batterie dans le réseau électrique afin de participer à l'optimisation des pics de consommation en fonction des pics de production.
+- plusieurs scénarios encore plus avancés nécessitant un matériel sofistiqué comme par exemple la recharge par induction ou automatisée
+
+Cette norme est aujourd'hui considérée comme très importante dans le milieu de la recharge électrique. Elle n'est cependant pas encore mise en place, car si elle nécessite une prisque de risque stratégique et financière conséquente pour les acteurs, elle implique surtout la participation d'une grande partie de tous les acteurs de la chaîne de valeur. Aujourd'hui, seul quelques initiatives d'implémentations ont été publiées, souvent résultantes d'une dynamique R&D plutôt que d'industrialisation en production.
+
+Enfin, l'ISO15118 propose une gestion de la sécurité via une architecture de gestion PKI (Public Key Infrastructure) permettant l'échange de clés et de certificats entre acteurs. La problématique de ce choix réside dans l'aspect arborescent des autorités de certifications, qui implique nécessairement une gouvernance elle même hiérarchique impliquant une réflexion stratégique de la part de chacun des acteurs, chacun voulant être au dessus des autres, et bloquant une mise en place rapide.
+
+With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the submentionned standards and open to any kind of payment. Our solution highly modular can adapt to the market choices and evolution. If the PKI architecture is the final actor's choice, we could propose a gouvernance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
 
 ## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
