@@ -29,19 +29,19 @@ More than understanding the entire electric charging process, it is important to
 
 Those three actors are the main ones, but there are other secondaries like **OEM Constructors** who builds Charging Points, **NSP** (Navigation Service Provider) who provides location information of Charge Points, **Integrators** who supports new players who want to setup their own Charge Station, ...
 
-Moreover, some actors take several roles like a CPO who can be eMSP and develop is own CPMS.
+Moreover, some actors take several roles like a CPO who can be eMSP and develop its own CPMS.
 
 To help all these actors to communicate together, some standards have been set up to manage the electromobility ecosystem.
 
 ## A complex value chain handled by a multitude of protocols
 Every distributed system has at least one protocol that define the common language, also called standard. This language is used by each actor to communicate and exchange data and values. 
 
-In electromobility there are mainly 2 protocols that we can define as the standards of the market (OCPP and OCPI). But there are a lot of other protocols that are actually still used.
+In electromobility there are mainly 2 protocols that we can define as the standards of the market (OCPP and OCPI). But there are a lot of other protocols that are still used.
 
 ![EVSE protocols](./evse_protocols.webp)
 (Image source: [ElaadNL EV related protocol study v1.1](https://www.elaad.nl/uploads/downloads/downloads_download/EV_related_protocol_study_v1.1.pdf)))
 
-**EVSE** (Electric Vehicle Supply Equipment) means equipment that delivers electrical energy from an electricity source to charge plug-in electric vehicle batteries (Charging Point, Chargin Station, Charging Dock, ...)
+**EVSE** (Electric Vehicle Supply Equipment) means equipment that delivers electrical energy from an electricity source to charge plug-in electric vehicle batteries (Charging Point, Charging Station, Charging Dock, ...)
 
 **DSO** (Distribution System Operator) operates the electric power distribution system which delivers electricity
 
@@ -55,7 +55,7 @@ The common way to implement this protocol is to use a SecureWebSocket between th
 
 ### OCPI protocol
 
-The OCPI protocol is used in two ways :
+The OCPI protocol is used in two ways:
 - in replacement of the private protocols used by the aggregators to exchange with CPO
 - to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, because it's difficult to implement it for this purpose
 
@@ -63,17 +63,19 @@ The OCPI protocol is used in two ways :
 
 Another standard is the ISO 15118 which aims to improve the electromobility ecosystem. Its objective is to simplify EV drivers’ life, to allow energy optimization, to reduce costs and to strengthen (cyber) security. One part of ISO 15118 is named “Plug&Charge”, it allows the charging station to identify the user's service contract and automatically charge the vehicle only by plugin the EV to the station.
 
-Les axes d'amélioration de la norme ISO15118 sont multiples : 
-- proposer une implémentation concrète du Plug & Charge
-- proposer le smart charging permettant une gestion intelligente de la recharge qui va tenir compte de plusieurs paramètres pour programmer un planning de recharge 
-- bidirectionnal charging : v2h (vehicle to home), v2b (vehicle to building), v2g (vehicle to grid). La recharge bidirectionnel permet de réinjecter l'énergie de la batterie dans le réseau électrique afin de participer à l'optimisation des pics de consommation en fonction des pics de production.
-- plusieurs scénarios encore plus avancés nécessitant un matériel sofistiqué comme par exemple la recharge par induction ou automatisée
+THE ISO 15118 standard is composed of multiple sub-documents based on the OSI model (ISO 7498).
 
-Cette norme est aujourd'hui considérée comme très importante dans le milieu de la recharge électrique. Elle n'est cependant pas encore mise en place, car si elle nécessite une prisque de risque stratégique et financière conséquente pour les acteurs, elle implique surtout la participation d'une grande partie de tous les acteurs de la chaîne de valeur. Aujourd'hui, seul quelques initiatives d'implémentations ont été publiées, souvent résultantes d'une dynamique R&D plutôt que d'industrialisation en production.
+The ISO 15118 proposes several developments points of improvements: 
+- a concrete implementation of Plug & Charge
+- smart charging solution allowing an intelligent management of the recharge. Using share data connections between each tier of the charging process, smart charging allows to monitor, manage, and restrict the use of charging devices and optimize energy consumption.  
+- bidirectional charging: v2h (vehicle to home), v2b (vehicle to building), v2g (vehicle to grid). Bidirectional charging allows to re-inject battery energy into the electrical grid to participate in the optimization of consumption peaks according to production peaks.
+- several more advanced scenarios requiring sophisticated equipment such as charging using induction or automated charging
 
-Enfin, l'ISO15118 propose une gestion de la sécurité via une architecture de gestion PKI (Public Key Infrastructure) permettant l'échange de clés et de certificats entre acteurs. La problématique de ce choix réside dans l'aspect arborescent des autorités de certifications, qui implique nécessairement une gouvernance elle même hiérarchique impliquant une réflexion stratégique de la part de chacun des acteurs, chacun voulant être au dessus des autres, et bloquant une mise en place rapide.
+This standard is now considered unavoidable in the electromobility world. However, it is not yet fully implemented, because it requires significant strategical decisions and financial risks for the actors and needs a joint participation of a major part of the actors who must work together. Today, only a few implementation initiatives have been published, often resulting from an R&D dynamic rather than from industrialization in production.
 
-With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the submentionned standards and open to any kind of payment. Our solution highly modular can adapt to the market choices and evolution. If the PKI architecture is the final actor's choice, we could propose a gouvernance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
+Finally, ISO15118 proposes a security management via a PKI (Public Key Infrastructure) management architecture allowing the exchange of keys and certificates between actors. This problematic requirement lies in the tree-like aspect of the certification authorities, which necessarily implies a hierarchical governance involving strategic thinking, each player wanting to be above the others, and blocking a rapid acceptation of this kind of governance.
+
+With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementionned standards and open to any kind of payment. Our highly modular solution can adapt to the market choices and evolutions. If the PKI architecture is the final actor's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
 
 ## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
@@ -82,7 +84,7 @@ Delmonicos wants to make the world of e-mobility easier and will allow each elec
 To do this, Delmonicos aims to equip each charge point with its innovative and universal software solution "Delmonicos inside" which will be composed by an operating system and a monitoring platform. 
 In addition, each user of the solution will be able to proceed payment either with his usual mobility application and his payment application to which the Delmonicos API has been integrated or he can simply use the Delmonicos application.
 
-This solution will provide electric vehicle drivers an experience close to what a "Tesla" owner lives on a "Plug & Charge" Supercharger. He simply has to connect his vehicle to the Supercharger to start charging. No identification problems or pricing surprises.
+This solution will provide electric vehicle drivers an experience close to what a "Tesla" owner lives on a "Plug & Charge" Supercharger. He simply must connect his vehicle to the Supercharger to start charging. No identification problems or pricing surprises.
 
 To achieve this challenge, Delmonicos is working on Blockchain technology based on the principle of trusted third parties and provides to our future users a new generation, simple and interconnected solution.
 
@@ -91,24 +93,24 @@ To achieve this challenge, Delmonicos is working on Blockchain technology based 
 As we have seen the main problem is related to the payment of the charging session. 
 We are developing and deploying an infrastructure dedicated to the supervision of charging station, strongly coupled with a micro-payment infrastructure. The main requirements of the solution are the following :
 
-* It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latests security constraints especially regarding DSP2.
-* It must be as **cheap** as possible to operate. The challenge is to meet the security requirements without having additonal costs or having to rely on external third-party.
+* It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding DSP2.
+* It must be as **cheap** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
 * It must be **easy to deploy**.
 * It must be **easily scalable**. Other parties should be able to join the networks without compromising the security of the infrastructure.
 
-Taking into account the above-mentioned constraints, we have chosen to base our solution on blockchain technology, for the following reasons :
+Taking into account the above-mentioned constraints, we have chosen to base our solution on blockchain technology, for the following reasons:
 
-* It is secure by design and quasi impossible to hack if carefully used and implemented.
-* It allows strong authentication through the use of wallets
+* It is secure by design and quasi-impossible to hack if carefully used and implemented.
+* It allows strong authentication using wallets
 * It allows secured delivery versus payment. Each payment can be related to a dedicated delivery of service and the proofs of the delivery can be stored in case of dispute.
 * The trustless nature of the technology allows adding new network participants without compromising the security of other participants.
 * The deployment can be easy and secured if each charging station is also a network node.
 
 ### Why Polkadot ?
-Finally, we chose Substrate/Polkadot because :
+Finally, we choose Substrate/Polkadot because:
 
-* By having nodes with a dedicated purpose, we will be able to optimise the footprint of the node in order to deploy it to charging stations, that have limited available resources
+* By having nodes with a dedicated purpose, we will be able to optimize the footprint of the node to deploy it to charging stations, that have limited available resources
 * We can choose the most suitable consensus mechanism and especially combine POA on the parachain with PoS on the relay chain.
-* We have the flexibility to chose between multiple target topologies. E.g. one parachain for all energy providers on the platform, or one parachain by energy provider.
+* We have the flexibility to choose between multiple target topologies. E.g. one parachain for all energy providers on the platform, or one parachain by energy provider.
 The composability of the FRAME architecture allows us to reuse existing pallets (e.g. identity, membership, contracts, ...) while being able to add our own specific pallets.
-Since we have connections to multiple interfaces (payments, charging power, mobile apps) the offchain features of Substrate will alllow us to handle the connection with external sources in both directions in a secure manner.
+Since we have connections to multiple interfaces (payments, charging power, mobile apps) the offchain features of Substrate will allow us to handle the connection with external sources in both directions in a secure manner.
