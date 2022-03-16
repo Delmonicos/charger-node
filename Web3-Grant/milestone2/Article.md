@@ -7,7 +7,7 @@ Therefore, facilitate electromobility development will pass by optimizing infras
 
 At Delmonicos, we are convinced that blockchain technology can ease electromobility adoption by optimizing the charging process while enhancing security and simplifying the user experience. 
 
-## A complexe value chain carried out by a multitude of actors
+## A complex value chain carried out by a multitude of actors
 As reflected by the following schema (Figure 1), most people think charging process of an electric vehicle is quite straightforward: 
 You connect the charging station to the vehicle 
 You start the charging process and then confirm that you are ok to use this station to charge your vehicle 
@@ -21,22 +21,47 @@ As we can see in the Figure 2, reality is far more complex. Multiple actors are 
 
 ![The reality](./real_process.png)
 
-More than understanding the entire electric charging process, it is important to identify each actors and explain their roles: 
+More than understanding the entire electric charging process, it is important to identify each actor and explain their roles: 
 
-* **CPO** (Charge Point Operator) manages and supervises the infrastructure of charging stations, usually in public spaces. It can operate one or many charging infrastructure behalf of station owners or for its own account. CPO uses **CPMS** (Charge Point Managing System), the software developped by **CPMS development company** used to manage and supervise the charging stations.
+* **CPO** (Charge Point Operator) manages and supervises the infrastructure of charging stations, usually in public spaces. It can operate one or many charging infrastructure behalf of station owners or for its own account. CPO uses **CPMS** (Charge Point Managing System), the software developed by **CPMS development company** used to manage and supervise the charging stations.
 * **eMSP** (eMobility Service Provider) is providing mobility services like giving access to charging stations to EV users. 
-* **Aggregator** is a platform offering services that enable mobility operators to easily build partnerships. It develops the links between CPO and eMSP to enables electric mobility roaming.
+* **Aggregator** (Or Clearing House or hub) is a platform offering services that enable mobility operators to easily build partnerships. It develops the links between CPO and eMSP to enables electric mobility roaming.
 
-Those three actors are the main ones, but there are other secondaries like **OEM Construtors** who builds Charging Points, **NSP** (Navigation Service Provider) who provides location information of Charge Points, **Integrators** who supports new players who want to setup their own Charge Station, ...
+Those three actors are the main ones, but there are other secondaries like **OEM Constructors** who builds Charging Points, **NSP** (Navigation Service Provider) who provides location information of Charge Points, **Integrators** who supports new players who want to setup their own Charge Station, ...
 
 Moreover, some actors take several roles like a CPO who can be eMSP and develop is own CPMS.
 
 To help all these actors to communicate together, some standards have been set up to manage the electromobility ecosystem.
 
-## Current standards
+## A complex value chain handled by a multitude of protocols
 Every distributed system has at least one protocol that define the common language, also called standard. This language is used by each actor to communicate and exchange data and values. 
 
-In electromobility one of these standards is Protocol OCPP (Open Charge Point Protocol) which allows the communication between electric vehicle charging stations and their operator's computer system. 
+In electromobility there are mainly 2 protocols that we can define as the standards of the market (OCPP and OCPI). But there are a lot of other protocols that are actually still used.
+
+![EVSE protocols](./evse_protocols.webp)
+(Image source: [ElaadNL EV related protocol study v1.1](https://www.elaad.nl/uploads/downloads/downloads_download/EV_related_protocol_study_v1.1.pdf)))
+
+**EVSE** (Electric Vehicle Supply Equipment) means equipment that delivers electrical energy from an electricity source to charge plug-in electric vehicle batteries (Charging Point, Chargin Station, Charging Dock, ...)
+**DSO** (Distribution System Operator) operates the electric power distribution system which delivers electricity
+
+## OCPP
+
+Protocol OCPP (Open Charge Point Protocol) allows the communication between **EVSE** and **CPMS**. 
+
+This protocol exists in two major versions 1.6 and 2.0.1. The 1.6 is the most used version, the 2.0.1 will probably soon replace the 1.6 as it allows to handle more complexes CPMS and makes OCPP compatible with the ISO15118 features.
+
+The common way to implement this protocol is to use a SecureWebSocket between the **EVSE** and the **CPMS** through a VPN (or HTTPS) for exchanging JSON messages.
+
+## OCPI
+
+The OCPI protocol is used in two ways :
+- in replacement of the private protocols used by the aggregators to exchange with CPO
+- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, because it's difficult to implement it for this purpose
+
+
+
+
+
 Another standard is the ISO 15118 which aims to improve the electromobility ecosystem. Its objective is to simplify EV drivers’ life, to allow energy optimization, to reduce costs and to strengthen (cyber) security. One part of ISO 15118 is named “Plug&Charge”, it allows the charging station to identify the user's service contract and automatically charge the vehicle only by plugin the EV to the station.
 
 With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the submentionned standards and open to any kind of payment. 
