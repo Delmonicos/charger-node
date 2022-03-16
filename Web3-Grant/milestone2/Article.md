@@ -42,6 +42,7 @@ In electromobility there are mainly 2 protocols that we can define as the standa
 (Image source: [ElaadNL EV related protocol study v1.1](https://www.elaad.nl/uploads/downloads/downloads_download/EV_related_protocol_study_v1.1.pdf)))
 
 **EVSE** (Electric Vehicle Supply Equipment) means equipment that delivers electrical energy from an electricity source to charge plug-in electric vehicle batteries (Charging Point, Chargin Station, Charging Dock, ...)
+
 **DSO** (Distribution System Operator) operates the electric power distribution system which delivers electricity
 
 ### OCPP protocol
