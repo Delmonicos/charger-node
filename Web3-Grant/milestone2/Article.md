@@ -7,7 +7,7 @@ Therefore, facilitate electromobility development will pass by optimizing infras
 
 At Delmonicos, we are convinced that blockchain technology can ease electromobility adoption by optimizing the charging process while enhancing security and simplifying the user experience. 
 
-## A complex value chain carried out by a multitude of actors
+## A complex value chain carried out by a multitude of players
 As reflected by the following schema (Figure 1), most people think charging process of an electric vehicle is quite straightforward: 
 You connect the charging station to the vehicle 
 You start the charging process and then confirm that you are ok to use this station to charge your vehicle 
@@ -17,24 +17,24 @@ When you want to stop, you unplug the cable, the price is calculated, and a paym
 
 ![The ideal process](./Ideal_process.png)
 
-As we can see in the Figure 2, reality is far more complex. Multiple actors are involved during the charging process to ensure that payment is processed and completed according to the EV (electric vehicle) owner consent.  
+As we can see in the Figure 2, reality is far more complex. Multiple players are involved during the charging process to ensure that payment is processed and completed according to the EV (electric vehicle) owner consent.  
 
 ![The reality](./real_process.png)
 
-More than understanding the entire electric charging process, it is important to identify each actor and explain their roles: 
+More than understanding the entire electric charging process, it is important to identify each player and explain their roles: 
 
 * **CPO** (Charge Point Operator) manages and supervises the infrastructure of charging stations, usually in public spaces. It can operate one or many charging infrastructure behalf of station owners or for its own account. CPO uses **CPMS** (Charge Point Managing System), the software developed by **CPMS development company** used to manage and supervise the charging stations.
 * **eMSP** (eMobility Service Provider) is providing mobility services like giving access to charging stations to EV users. 
 * **Aggregator** (Or Clearing House or hub) is a platform offering services that enable mobility operators to easily build partnerships. It develops the links between CPO and eMSP to enables electric mobility roaming.
 
-Those three actors are the main ones, but there are other secondaries like **OEM Constructors** who builds Charging Points, **NSP** (Navigation Service Provider) who provides location information of Charge Points, **Integrators** who supports new players who want to setup their own Charge Station, ...
+Those three players are the main ones, but there are other secondaries like **OEM Constructors** who builds Charging Points, **NSP** (Navigation Service Provider) who provides location information of Charge Points, **Integrators** who supports new players who want to setup their own Charge Station, ...
 
-Moreover, some actors take several roles like a CPO who can be eMSP and develop its own CPMS.
+Moreover, some players take several roles like a CPO who can be eMSP and develop its own CPMS.
 
-To help all these actors to communicate together, some standards have been set up to manage the electromobility ecosystem.
+To help all these players to communicate together, some standards have been set up to manage the electromobility ecosystem.
 
 ## A complex value chain handled by a multitude of protocols
-Every distributed system has at least one protocol that define the common language, also called standard. This language is used by each actor to communicate and exchange data and values. 
+Every distributed system has at least one protocol that define the common language, also called standard. This language is used by each player to communicate and exchange data and values. 
 
 In electromobility there are mainly 2 protocols that we can define as the standards of the market (OCPP and OCPI). But there are a lot of other protocols that are still used.
 
@@ -57,7 +57,7 @@ The common way to implement this protocol is to use a SecureWebSocket between th
 
 The OCPI protocol is used in two ways:
 - in replacement of the private protocols used by the aggregators to exchange with CPO and with eMSP
-- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, as it's difficult to implement it for this purpose and botch actors must engage a contract themselves
+- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, as it's difficult to implement it for this purpose and both players must engage a contract themselves
 
 Note: the above scheme about protocols is too old to account for the OCPI using between CPO/eMSP and aggregators.
 
@@ -73,16 +73,16 @@ The ISO 15118 proposes several developments points of improvements:
 - bidirectional charging: v2h (vehicle to home), v2b (vehicle to building), v2g (vehicle to grid). Bidirectional charging allows to re-inject battery energy into the electrical grid to participate in the optimization of consumption peaks according to production peaks.
 - several more advanced scenarios requiring sophisticated equipment such as charging using induction or automated charging
 
-This standard is now considered unavoidable in the electromobility world. However, it is not yet fully implemented, because it requires significant strategical decisions and financial risks for the actors and needs a joint participation of a major part of the actors who must work together. Today, only a few implementation initiatives have been published, often resulting from an R&D dynamic rather than from industrialization in production.
+This standard is now considered unavoidable in the electromobility world. However, it is not yet fully implemented, because it requires significant strategical decisions and financial risks for the players and needs a joint participation of a major part of the players who must work together. Today, only a few implementation initiatives have been published, often resulting from an R&D dynamic rather than from industrialization in production.
 
-Finally, ISO15118 proposes a security management via a PKI (Public Key Infrastructure) management architecture allowing the exchange of keys and certificates between actors. This problematic requirement lies in the tree-like aspect of the certification authorities, which necessarily implies a hierarchical governance involving strategic thinking, each player wanting to be above the others, and blocking a rapid acceptation of this kind of governance.
+Finally, ISO15118 proposes a security management via a PKI (Public Key Infrastructure) management architecture allowing the exchange of keys and certificates between players. This problematic requirement lies in the tree-like aspect of the certification authorities, which necessarily implies a hierarchical governance involving strategic thinking, each player wanting to be above the others, and blocking a rapid acceptation of this kind of governance.
 
-With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution can adapt to the market choices and evolutions. If the PKI architecture is the final actor's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
+With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution can adapt to the market choices and evolutions. If the PKI architecture is the final player's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
 
 ## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
 
-As seen above, the electrical ecosystem is complex, with many actors and as many points of view. To handle this complexity, we develop a very modular solutions allowing to adapt to our partners and facilitate our market entry.
+As seen above, the electrical ecosystem is complex, with many players and as many points of view. To handle this complexity, we develop a very modular solutions allowing to adapt to our partners and facilitate our market entry.
 
 ![Delmonicos inside](./delmonicos_inside.png)
 
@@ -111,9 +111,9 @@ The main requirements of the solution are the following:
 * It must be as **compatitive** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
 * It must be **easy to deploy**.
 * It must be **easily scalable**. Other parties should be able to join the networks without compromising the security of the infrastructure.
-* It must allow actors to collaborate with **controlled transparency**, **integrity** and **effective performance**
+* It must allow players to collaborate with **controlled transparency**, **integrity** and **effective performance**
 
-Considering the above-mentioned constraints, we have chosen to base our solution on blockchain technology, for the following reasons:
+Considering the above-mentioned constraints, we have selected to base our solution on blockchain technology, for the following reasons:
 
 * It is secure by design and quasi-impossible to hack if carefully used and implemented.
 * It allows strong authentication using wallets
