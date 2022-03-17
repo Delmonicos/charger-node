@@ -113,7 +113,7 @@ The main requirements of the solution are the following:
 * It must be **easily scalable**. Other parties should be able to join the networks without compromising the security of the infrastructure.
 * It must allow players to collaborate with **controlled transparency**, **integrity** and **effective performance**
 
-Considering the above-mentioned constraints, we have selected to base our solution on blockchain technology, for the following reasons:
+COnsidering the above-mentioned criterias, we have selected to develop our solution around blockchain technology, that is perfectly matching or request:
 
 * It is secure by design and quasi-impossible to hack if carefully used and implemented.
 * It allows strong authentication using wallets
