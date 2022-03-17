@@ -108,7 +108,7 @@ We want to develop a new solution, not based on any existing technology used by 
 The main requirements of the solution are the following:
 
 * It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding DSP2.
-* It must be as **cheap** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
+* It must be as **compatitive** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
 * It must be **easy to deploy**.
 * It must be **easily scalable**. Other parties should be able to join the networks without compromising the security of the infrastructure.
 * It must allow actors to collaborate with **controlled transparency**, **integrity** and **effective performance**
