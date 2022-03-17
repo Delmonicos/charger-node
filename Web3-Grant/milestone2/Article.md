@@ -56,8 +56,10 @@ The common way to implement this protocol is to use a SecureWebSocket between th
 ### OCPI protocol
 
 The OCPI protocol is used in two ways:
-- in replacement of the private protocols used by the aggregators to exchange with CPO
-- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, because it's difficult to implement it for this purpose
+- in replacement of the private protocols used by the aggregators to exchange with CPO and with eMSP
+- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, as it's difficult to implement it for this purpose and botch actors must engage a contract themselves
+
+Note: the above scheme about protocols is too old to account fot the OCPI using between CPO and aggregators.
 
 ### ISO 15118 standard
 
@@ -80,23 +82,36 @@ With Delmonicos, we are creating a new generation of software that will make any
 ## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
 
-![Delmonicos inside](./delmonicos_inside.png)
-To do this, Delmonicos aims to equip each charge point with its innovative and universal software solution "Delmonicos inside" which will be composed by an operating system and a monitoring platform. 
-In addition, each user of the solution will be able to proceed payment either with his usual mobility application and his payment application to which the Delmonicos API has been integrated or he can simply use the Delmonicos application.
+As seen above, the electrical ecosystem is complexe, with many actors and as many points of view. To handle this complexity, we develop a very modular solutions allowing to adapt to our patners and facilitate our market entry.
 
-This solution will provide electric vehicle drivers an experience close to what a "Tesla" owner lives on a "Plug & Charge" Supercharger. He simply must connect his vehicle to the Supercharger to start charging. No identification problems or pricing surprises.
+![Delmonicos inside](./delmonicos_inside.png)
+
+To do this, Delmonicos aims to equip each charge point with its innovative and universal software solution "Delmonicos inside" which will be composed by an operating system and a monitoring platform. 
+In addition, each user of the solution will be able to proceed payment either with his usual mobility application and his payment application to which the Delmonicos API has been integrated or he can simply use the Delmonicos web application (without any installation) or with the mobile application allowing a more deeper and customizate user experience.
+
+The final goal, when the ecosystem will be ready and the electrical vehicles able to send informations to the connected charging Point, Delmonicos will provide electric vehicle drivers an experience close to what a "Tesla" owner lives on a "Plug & Charge" Supercharger. He simply would connect his vehicle to the Supercharger to start charging. No identification problems or pricing surprises. Waiting for a more mature ecosystem, starting from the MVP, Delmonicos will provide a "Pay as you go" solution, allowing the process of charging without subscription using a standard payment mode (CB, Paypal, Apple Pay, ...) without any additionnal fee.
+
+In our futur versions, Delmonicos would deliver more features based on his modular approach (Smart charging, offline charge, and more surprises).
+
+![Benefits Delmonicos](https://user-images.githubusercontent.com/89196448/158823153-0c823823-b58f-4341-aec9-976319c285e2.png)
 
 To achieve this challenge, Delmonicos is working on Blockchain technology based on the principle of trusted third parties and provides to our future users a new generation, simple and interconnected solution.
 
 ### Why blockchain for electromobility?  
 
-As we have seen the main problem is related to the payment of the charging session. 
-We are developing and deploying an infrastructure dedicated to the supervision of charging station, strongly coupled with a micro-payment infrastructure. The main requirements of the solution are the following :
+We want to develop a new solution, not based on any existing technology used by the electromobility ecosystem, and solve those aims:
+* identification of the ev-driver / vehicle / any element plugged on a charge point 
+* authentification 
+* secure payment
+* governance
+
+The main requirements of the solution are the following :
 
 * It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding DSP2.
 * It must be as **cheap** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
 * It must be **easy to deploy**.
 * It must be **easily scalable**. Other parties should be able to join the networks without compromising the security of the infrastructure.
+* It must be allow actors to collaborate with **controlled transparency**, **integrity** and **effective performance**
 
 Taking into account the above-mentioned constraints, we have chosen to base our solution on blockchain technology, for the following reasons:
 
@@ -105,6 +120,7 @@ Taking into account the above-mentioned constraints, we have chosen to base our 
 * It allows secured delivery versus payment. Each payment can be related to a dedicated delivery of service and the proofs of the delivery can be stored in case of dispute.
 * The trustless nature of the technology allows adding new network participants without compromising the security of other participants.
 * The deployment can be easy and secured if each charging station is also a network node.
+* The block chain protocol allows several governance models.
 
 ### Why Polkadot ?
 Finally, we choose Substrate/Polkadot because:
