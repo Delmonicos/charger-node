@@ -93,7 +93,7 @@ The final goal, when the ecosystem will be ready and the electrical vehicles abl
 
 In our futur versions, Delmonicos would deliver more features based on his modular approach (Smart charging, offline charge, and more surprises).
 
-![Benefits Delmonicos](https://user-images.githubusercontent.com/89196448/158823153-0c823823-b58f-4341-aec9-976319c285e2.png)
+![Benefits Delmonicos](./benefits_Delmonicos.png)
 
 To achieve this challenge, Delmonicos is working on Blockchain technology based on the principle of trusted third parties and provides to our future users a new generation, simple and interconnected solution.
 
