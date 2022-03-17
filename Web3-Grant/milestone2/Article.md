@@ -59,7 +59,7 @@ The OCPI protocol is used in two ways:
 - in replacement of the private protocols used by the aggregators to exchange with CPO and with eMSP
 - to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, as it's difficult to implement it for this purpose and botch actors must engage a contract themselves
 
-Note: the above scheme about protocols is too old to account fot the OCPI using between CPO and aggregators.
+Note: the above scheme about protocols is too old to account for the OCPI using between CPO/eMSP and aggregators.
 
 ### ISO 15118 standard
 
@@ -77,21 +77,21 @@ This standard is now considered unavoidable in the electromobility world. Howeve
 
 Finally, ISO15118 proposes a security management via a PKI (Public Key Infrastructure) management architecture allowing the exchange of keys and certificates between actors. This problematic requirement lies in the tree-like aspect of the certification authorities, which necessarily implies a hierarchical governance involving strategic thinking, each player wanting to be above the others, and blocking a rapid acceptation of this kind of governance.
 
-With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementionned standards and open to any kind of payment. Our highly modular solution can adapt to the market choices and evolutions. If the PKI architecture is the final actor's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
+With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution can adapt to the market choices and evolutions. If the PKI architecture is the final actor's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
 
 ## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
 
-As seen above, the electrical ecosystem is complexe, with many actors and as many points of view. To handle this complexity, we develop a very modular solutions allowing to adapt to our patners and facilitate our market entry.
+As seen above, the electrical ecosystem is complex, with many actors and as many points of view. To handle this complexity, we develop a very modular solutions allowing to adapt to our partners and facilitate our market entry.
 
 ![Delmonicos inside](./delmonicos_inside.png)
 
 To do this, Delmonicos aims to equip each charge point with its innovative and universal software solution "Delmonicos inside" which will be composed by an operating system and a monitoring platform. 
-In addition, each user of the solution will be able to proceed payment either with his usual mobility application and his payment application to which the Delmonicos API has been integrated or he can simply use the Delmonicos web application (without any installation) or with the mobile application allowing a more deeper and customizate user experience.
+In addition, each user of the solution will be able to proceed payment either with his usual mobility application and his payment application to which the Delmonicos API has been integrated or he can simply use the Delmonicos web application (without any installation) or with the mobile application allowing a deeper and customized user experience.
 
-The final goal, when the ecosystem will be ready and the electrical vehicles able to send informations to the connected charging Point, Delmonicos will provide electric vehicle drivers an experience close to what a "Tesla" owner lives on a "Plug & Charge" Supercharger. He simply would connect his vehicle to the Supercharger to start charging. No identification problems or pricing surprises. Waiting for a more mature ecosystem, starting from the MVP, Delmonicos will provide a "Pay as you go" solution, allowing the process of charging without subscription using a standard payment mode (CB, Paypal, Apple Pay, ...) without any additionnal fee.
+The final goal, when the ecosystem will be ready and the electrical vehicles able to send information to the connected charging Point, Delmonicos will provide electric vehicle drivers an experience close to what a "Tesla" owner lives on a "Plug & Charge" Supercharger. He simply would connect his vehicle to the Supercharger to start charging. No identification problems or pricing surprises. Waiting for a more mature ecosystem, starting from the MVP, Delmonicos will provide a "Pay as you go" solution, allowing the process of charging without subscription using a standard payment mode (CB, Paypal, Apple Pay, ...) without any additional fee.
 
-In our futur versions, Delmonicos would deliver more features based on his modular approach (Smart charging, offline charge, and more surprises).
+In our future versions, Delmonicos would deliver more features based on his modular approach (Smart charging, offline charge, and more surprises).
 
 ![Benefits Delmonicos](./benefits_Delmonicos.png)
 
@@ -101,19 +101,19 @@ To achieve this challenge, Delmonicos is working on Blockchain technology based 
 
 We want to develop a new solution, not based on any existing technology used by the electromobility ecosystem, and solve those aims:
 * identification of the ev-driver / vehicle / any element plugged on a charge point 
-* authentification 
+* authentication 
 * secure payment
 * governance
 
-The main requirements of the solution are the following :
+The main requirements of the solution are the following:
 
 * It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding DSP2.
 * It must be as **cheap** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
 * It must be **easy to deploy**.
 * It must be **easily scalable**. Other parties should be able to join the networks without compromising the security of the infrastructure.
-* It must be allow actors to collaborate with **controlled transparency**, **integrity** and **effective performance**
+* It must allow actors to collaborate with **controlled transparency**, **integrity** and **effective performance**
 
-Taking into account the above-mentioned constraints, we have chosen to base our solution on blockchain technology, for the following reasons:
+COnsidering the above-mentioned constraints, we have chosen to base our solution on blockchain technology, for the following reasons:
 
 * It is secure by design and quasi-impossible to hack if carefully used and implemented.
 * It allows strong authentication using wallets
