@@ -1,7 +1,7 @@
 # How blockchain can ease electromobility
 
 Electromobility is essential element in energy transition and sustainable city, and it is an unmissable element in transport sector evolution. Electromobility allows the synergy between ecological, social, and technical values. 
-Europe have a strong will to support and help the electric car market development. Thanks to European Government actions it is now commonly accepted that only electric vehicles will be sold by vendors in few years.
+Europe has a strong will to support and help the electric car market development. Thanks to European Government actions it is now commonly accepted that only electric vehicles will be sold by vendors in few years.
 But passing from gas vehicles to electric vehicles is not as easy as it seems. Most people are not convinced by electromobility due to the difficulty to find a charging station, to the lack of transparency regarding charging session price and to the charging time.
 Therefore, facilitate electromobility development will pass by optimizing infrastructures and increasing the number of public charging spots. 
 
@@ -59,25 +59,25 @@ The OCPI protocol is used in two ways:
 - in replacement of the private protocols used by the aggregators to exchange with CPO and with eMSP
 - to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, as it's difficult to implement it for this purpose and both players must engage a contract themselves
 
-Note: the above scheme about protocols is too old to account for the OCPI using between CPO/eMSP and aggregators.
+Note: the above scheme about protocols is too old to represent the usage of OCPI between CMO/eMSP and aggregators.
 
 ### ISO 15118 standard
 
-Another standard is the ISO 15118 which aims to improve the electromobility ecosystem. Its objective is to simplify EV drivers’ life, to allow energy optimization, to reduce costs and to strengthen (cyber) security. One part of ISO 15118 is named “Plug&Charge”, it allows the charging station to identify the user's service contract and automatically charge the vehicle only by plugin the EV to the station.
+Another standard is the ISO 15118 which aims to improve the electromobility ecosystem. Its objectives are to simplify EV drivers’ life, to allow energy optimization, to reduce costs and to strengthen (cyber) security. One part of ISO 15118 is named “Plug&Charge”, it allows the charging station to identify the user's service contract and automatically charge the vehicle only by plugin the EV to the station.
 
 THE ISO 15118 standard is composed of multiple sub-documents based on the OSI model (ISO 7498).
 
 The ISO 15118 proposes several developments points of improvements: 
 - a concrete implementation of Plug & Charge
-- smart charging solution allowing an intelligent management of the recharge. Using share data connections between each tier of the charging process, smart charging allows to monitor, manage, and restrict the use of charging devices and optimize energy consumption.  
+- smart charging solution allowing an intelligent management of the recharge. Using shared data connections between each tier of the charging process, smart charging allows to monitor, manage, and restricts the use of charging devices and optimizes energy consumption.  
 - bidirectional charging: v2h (vehicle to home), v2b (vehicle to building), v2g (vehicle to grid). Bidirectional charging allows to re-inject battery energy into the electrical grid to participate in the optimization of consumption peaks according to production peaks.
 - several more advanced scenarios requiring sophisticated equipment such as charging using induction or automated charging
 
-This standard is now considered unavoidable in the electromobility world. However, it is not yet fully implemented, because it requires significant strategical decisions and financial risks for the players and needs a joint participation of a major part of the players who must work together. Today, only a few implementation initiatives have been published, often resulting from an R&D dynamic rather than from industrialization in production.
+This standard is now considered unavoidable in the electromobility world. However, it is not yet fully implemented, because it requires significant strategical decisions and financial risks for the players and needs a joint participation of a major part of the players who must work together. Today, only a few implementation initiatives have been published, often resulting from a R&D dynamic rather than from industrialization in production.
 
 Finally, ISO15118 proposes a security management via a PKI (Public Key Infrastructure) management architecture allowing the exchange of keys and certificates between players. This problematic requirement lies in the tree-like aspect of the certification authorities, which necessarily implies a hierarchical governance involving strategic thinking, each player wanting to be above the others, and blocking a rapid acceptation of this kind of governance.
 
-With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution can adapt to the market choices and evolutions. If the PKI architecture is the final player's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
+With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution can be adapted to the market choices and evolutions. If the PKI architecture is the final player's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
 
 ## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
@@ -108,19 +108,19 @@ We want to develop a new solution, not based on any existing technology used by 
 The main requirements of the solution are the following:
 
 * It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding DSP2.
-* It must be as **compatitive** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
+* It must be as **competitive** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
 * It must be **easy to deploy**.
 * It must be **easily scalable**. Other parties should be able to join the networks without compromising the security of the infrastructure.
 * It must allow players to collaborate with **controlled transparency**, **integrity** and **effective performance**
 
-COnsidering the above-mentioned criterias, we have selected to develop our solution around blockchain technology, that is perfectly matching or request:
+Considering the above-mentioned criterias, we have chosen to develop our solution based on blockchain technology, that is perfectly matching or request:
 
 * It is secure by design and quasi-impossible to hack if carefully used and implemented.
 * It allows strong authentication using wallets
 * It allows secured delivery versus payment. Each payment can be related to a dedicated delivery of service and the proofs of the delivery can be stored in case of dispute.
 * The trustless nature of the technology allows adding new network participants without compromising the security of other participants.
 * The deployment can be easy and secured if each charging station is also a network node.
-* The block chain protocol allows several governance models.
+* The blockchain protocol allows several governance models.
 
 ### Why Polkadot ?
 Finally, we choose Substrate/Polkadot because:
