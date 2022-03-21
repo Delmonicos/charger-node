@@ -57,7 +57,7 @@ The common way to implement this protocol is to use a SecureWebSocket between th
 
 The OCPI protocol is used in two ways:
 - in replacement of the private protocols used by the aggregators to exchange with CPO and with eMSP
-- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common using of the protocol, as it's difficult to implement it for this purpose and both players must engage a contract themselves
+- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common usage of the protocol, as it's difficult to implement it for this purpose and both players must engage a contract themselves
 
 Note: the above scheme about protocols is too old to represent the usage of OCPI between CMO/eMSP and aggregators.
 
@@ -77,7 +77,7 @@ This standard is now considered unavoidable in the electromobility world. Howeve
 
 Finally, ISO15118 proposes a security management via a PKI (Public Key Infrastructure) management architecture allowing the exchange of keys and certificates between players. This problematic requirement lies in the tree-like aspect of the certification authorities, which necessarily implies a hierarchical governance involving strategic thinking, each player wanting to be above the others, and blocking a rapid acceptation of this kind of governance.
 
-With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution can be adapted to the market choices and evolutions. If the PKI architecture is the final player's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
+With Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution can be adapted to the market choices and evolutions. If the PKI architecture is the final sector's choice, we could propose a governance compatible with it, but, if the market could not accept it, we could propose an alternative which will be compatible with the others axes of the ISO 15118.
 
 ## Delmonicos inside
 Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
