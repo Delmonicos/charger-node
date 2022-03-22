@@ -124,5 +124,5 @@ Finally, we choose Substrate/Polkadot for the following reasons:
 The composability of the FRAME architecture allows us to reuse existing pallets (e.g. identity, membership, contracts, ...) while being able to add our own specific pallets.
 Since we have connections to multiple interfaces (payments, charging power, mobile apps) the offchain features of Substrate will allow us to handle the connection with external sources in both directions in a secure manner.
 
-[1]: <https://www.touteleurope.eu/l-europe-et-moi/le-mecanisme-pour-l-interconnexion-en-europe-mie-un-programme-pour-les-infrastructures-europeenne/>
+[1]: <https://ec.europa.eu/inea/en/connecting-europe-facility/>
 [2]: <https://www.consilium.europa.eu/fr/policies/green-deal/eu-plan-for-a-green-transition/>
