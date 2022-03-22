@@ -1,6 +1,6 @@
 # How blockchain can ease electromobility
 Electromobility is essential piece of the energy transition and sustainable city, and it is an unmissable element in transport sector evolution. Electromobility allows the synergy between ecological, social, and technical values. 
-Europe has a strong will to support and help the electric car market development. Thanks to European Government actions it is now commonly accepted that only electric vehicles will be supplied by vendors in the coming years.
+[Europe has a strong will to support][1] and help the electric car market development. Thanks to European Government actions it is now commonly accepted that [only electric vehicles will be supplied by vendors in the coming years][2].
 But moving from internal combustion engine vehicles to electric vehicles is not as easy as it seems. Most people are not convinced by electromobility due to the difficulty to locate a charging station, to connect into it, due to the lack of transparency and finally due to the charging time.
 Therefore, to accelerate electromobility development will require to increase the number of public charge points and facilitate the access and connection to all of them. 
 
@@ -123,3 +123,6 @@ Finally, we choose Substrate/Polkadot for the following reasons:
 * We have the flexibility to choose between multiple target topologies. E.g. one parachain for all energy providers on the platform, or one parachain by energy provider.
 The composability of the FRAME architecture allows us to reuse existing pallets (e.g. identity, membership, contracts, ...) while being able to add our own specific pallets.
 Since we have connections to multiple interfaces (payments, charging power, mobile apps) the offchain features of Substrate will allow us to handle the connection with external sources in both directions in a secure manner.
+
+[1]: <https://www.touteleurope.eu/l-europe-et-moi/le-mecanisme-pour-l-interconnexion-en-europe-mie-un-programme-pour-les-infrastructures-europeenne/>
+[2]: <https://www.consilium.europa.eu/fr/policies/green-deal/eu-plan-for-a-green-transition/>
