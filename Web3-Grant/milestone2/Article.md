@@ -2,7 +2,7 @@
 Electromobility is essential piece of the energy transition and sustainable city, and it is an unmissable element in transport sector evolution. Electromobility allows the synergy between ecological, social, and technical values. 
 [Europe has a strong will to support][1] and help the electric car market development. Thanks to European Government actions it is now commonly accepted that [only electric vehicles will be supplied by vendors in the coming years][2].
 But moving from internal combustion engine vehicles to electric vehicles is not as easy as it seems. Most people are not convinced by electromobility due to the difficulty to locate a charging station, to connect into it, due to the lack of transparency and finally due to the charging time.
-Therefore, to accelerate electromobility development will require to increase the number of public charge points and facilitate the access and connection to all of them. 
+Therefore, to accelerate electromobility development will [require to increase the number of public charge points and facilitate the access and connection to all of them][3]. 
 
 At Delmonicos, we are convinced that blockchain technology can ease electromobility adoption by optimizing the charging process while enhancing security, scalability and simplifying the user experience. 
 
@@ -40,14 +40,14 @@ In the electromobility world, there are mainly 2 protocols that are defined as t
 **DSO** (Distribution System Operator) operates the electric power distribution system which delivers energy.
 
 ### OCPP protocol
-Protocol OCPP (Open Charge Point Protocol) allows the communication between **EVSE** and **CPMS**. 
+[Protocol OCPP][4] (Open Charge Point Protocol) allows the communication between **EVSE** and **CPMS**. 
 
 This protocol exists in two major versions 1.6 and 2.0.1. The 1.6 is the most used version, the 2.0.1 will probably soon replace the 1.6 as it allows to handle more complexes CPMS and makes OCPP compatible with the ISO15118 features.
 
 The common way to implement this protocol is to use a SecureWebSocket between the **EVSE** and the **CPMS** through a VPN (or HTTPS) for exchanging JSON messages.
 
 ### OCPI protocol
-The OCPI protocol is used in two ways:
+The [OCPI protocol][5] is used in two ways:
 - in replacement of the private protocols used by the aggregators to exchange with CPO and with eMSP
 - to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common usage of the protocol, as it's difficult to implement it for this purpose and both players must engage a contract themselves
 
@@ -56,7 +56,7 @@ Note: the above scheme about protocols does not take into consideration OCPI pro
 ### ISO 15118 standard
 Another standard is the ISO 15118 which aims to improve the electromobility communication ecosystem. Its objectives are to simplify EV drivers’ life, to allow energy optimization, to reduce costs and to strengthen (cyber) security. One part of ISO 15118 is named “Plug&Charge”, it allows the charging station to identify the user's service contract and automatically charge the vehicle only by pluging the EV to the docking station.
 
-THE ISO 15118 standard is composed of multiple sub-documents based on the OSI model (ISO 7498).
+THE ISO 15118 standard is composed of multiple sub-documents based on the [OSI model][7] (ISO 7498).
 
 The ISO 15118 proposes several developments points of improvements: 
 - a concrete implementation of Plug & Charge
@@ -64,11 +64,11 @@ The ISO 15118 proposes several developments points of improvements:
 - bidirectional charging: v2h (vehicle to home), v2b (vehicle to building), v2g (vehicle to grid). Bidirectional charging allows to re-inject battery energy into the electrical grid to participate in the optimization of consumption peaks according to production peaks.
 - several more advanced scenarios requiring sophisticated equipment such as charging using induction or automated charging
 
-This standard is now considered unavoidable in the electromobility world. However, it is not yet fully implemented, because it requires significant strategical decisions and financial risks for the players and needs a joint participation of a major part of the stakeholders who must cooperate together. Today, only a few implementation initiatives have been published, often resulting from a R&D dynamic rather than from industrialization in production.
+[This standard is now considered unavoidable in the electromobility world][8]. However, it is not yet fully implemented, because it requires significant strategical decisions and financial risks for the players and needs a joint participation of a major part of the stakeholders who must cooperate together. Today, only a few implementation initiatives have been published, often resulting from a R&D dynamic rather than from industrialization in production.
 
-Finally, ISO15118 proposes a security management via a PKI (Public Key Infrastructure) management architecture allowing the exchange of keys and certificates between stakeholders. This problematic requirement lies in the tree-like aspect of the certification authorities, which necessarily implies a hierarchical governance involving strategic thinking, each player wanting to be above the others, and blocking a rapid acceptation of this kind of governance.
+Finally, ISO15118 proposes a security management via a PKI (Public Key Infrastructure) management architecture allowing the exchange of keys and certificates between stakeholders. This problematic requirement lies in the tree-like aspect of the certification authorities, which necessarily implies a hierarchical governance involving strategic thinking, each player wanting to be above the others, and [blocking a rapid acceptation of this kind of governance][9].
 
-At Delmonicos, we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution would adapt to the market choices and evolutions. If the PKI architecture is the final choice, we could propose a governance fully compatible, and, should the market not accepting this valuable option, we could propose an alternative which would be compatible with the others axes of the ISO 15118.
+At [Delmonicos][10], we are creating a new generation of software that will make any equipped charging station natively compatible with the aforementioned standards and open to any kind of payment. Our highly modular solution would adapt to the market choices and evolutions. If the PKI architecture is the final choice, we could propose a governance fully compatible, and, should the market not accepting this valuable option, we could propose an alternative which would be compatible with the others axes of the ISO 15118.
 
 ## Delmonicos inside
 To make the story short, Delmonicos wants to make the world of e-mobility easier and will allow each electric vehicle driver to be able to charge at any smart charging station without any fear or doubt about the cost they will be charged.
@@ -89,9 +89,9 @@ Our roadmap is etablished and in our future versions, Delmonicos would deliver m
 
 ![Benefits Delmonicos](./benefits_Delmonicos.png)
 
-To achieve this challenge, Delmonicos is using Blockchain technology based on the principle of trusted third parties that will provides EV Drivers a new generation of simple and interconnected solution creating a universal network of charging station accessible, anywhere, at any time at the right price.
+To achieve this challenge, Delmonicos is using Blockchain technology based on the principle of [trusted third parties][11] that will provides EV Drivers a new generation of simple and interconnected solution creating a universal network of charging station accessible, anywhere, at any time at the right price.
 
-### Why blockchain for electromobility?  
+### Why [blockchain][19] for electromobility?  
 The target is to propose a new solution being able to meet the requirement of the ecosystem being:
 * identification of the ev-driver / vehicle / any element plugged on a charge point 
 * authentication 
@@ -100,11 +100,11 @@ The target is to propose a new solution being able to meet the requirement of th
 * 
 The mandatory functionalities of solution are the following:
 
-* It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding DSP2.
+* It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding [DSP2][12].
 * It must be as **competitive** as possible to operate. The challenge is to meet the security requirements without having additional costs or having to rely on external third-party.
 * It must be **easy to deploy**.
 * It must be **easily scalable**. Other parties should be able to join the networks without compromising the security of the infrastructure.
-* It must allow stakeholders to collaborate with **controlled transparency**, **integrity** and **effective performance**
+* It must allow stakeholders to collaborate with [**controlled transparency**, **integrity** and **effective performance**][13]
 
 Considering the above-mentioned criteria, we have made the choice to develop our solution around blockchain technology that is perfectly matching the ecomobility requirements :
 
@@ -116,13 +116,30 @@ Considering the above-mentioned criteria, we have made the choice to develop our
 * The blockchain protocol allows several governance models.
 
 ### Why Polkadot ?
-Finally, we choose Substrate/Polkadot for the following reasons:
+Finally, we choose [Substrate][16]/[Polkadot][15] for the following reasons:
 
 * By having nodes with a dedicated purpose, we will be able to optimize the footprint of the node to deploy it to charging stations, or in the Cloud, that have limited available resources
-* We can choose the most suitable consensus mechanism and especially combine POA on the parachain with PoS on the relay chain.
+* We can choose the most suitable consensus mechanism and especially [combine POA on the parachain with PoS on the relay chain][14].
 * We have the flexibility to choose between multiple target topologies. E.g. one parachain for all energy providers on the platform, or one parachain by energy provider.
-The composability of the FRAME architecture allows us to reuse existing pallets (e.g. identity, membership, contracts, ...) while being able to add our own specific pallets.
+The composability of the [FRAME architecture][17] allows us to reuse existing pallets (e.g. identity, membership, contracts, ...) while being able to add our own specific pallets.
 Since we have connections to multiple interfaces (payments, charging power, mobile apps) the offchain features of Substrate will allow us to handle the connection with external sources in both directions in a secure manner.
 
-[1]: <https://ec.europa.eu/inea/en/connecting-europe-facility/>
-[2]: <https://www.consilium.europa.eu/en/policies/green-deal/eu-plan-for-a-green-transition/>
+[1]: <https://ec.europa.eu/inea/en/connecting-europe-facility/> "The Connecting Europe Facility (CEF) is a key EU funding instrument"
+[2]: <https://www.consilium.europa.eu/en/policies/green-deal/eu-plan-for-a-green-transition/> "The EU's plan for a green transition"
+[3]: <https://op.europa.eu/webpub/eca/special-reports/electrical-recharging-5-2021/en/> "report of an audit about charging station deployment"
+[4]: <https://www.openchargealliance.org/> "Main Page open charge alliance"
+[5]: <https://evroaming.org/ocpi-background/> "Main page EVRoaming Foundation about OCPI"
+[6]: <https://en.wikipedia.org/wiki/ISO_15118> "Wikipedia page about ISO 15118"
+[7]: <https://en.wikipedia.org/wiki/OSI_model> "Wikipedia page about OSI Model"
+[8]: <https://www.afirev.fr/en/recommendation-by-afirev-following-an-analysis-of-the-utilities-and-costs-of-iso-15118-communication-protocol-between-electric-vehicle-and-charging-point/>
+[9]: <https://www.eurelectric.org/media/4563/20200709_eurelectric_features_and_implementation_of_iso15118_final-2020-030-0464-01-e-h-330B2A5B.pdf> "Eurelectric analysis and recommendations about communication protocols via EU harmonisation measures" 
+[10]: <https://www.delmonicos.tech/> "Delmonicos.tech homepage"
+[11]: <https://en.wikipedia.org/wiki/Trusted_third_party> "Wikipedia page about Trusted Third Party"
+[12]: <https://ec.europa.eu/info/law/payment-services-psd-2-directive-eu-2015-2366_en> "Payment services (PSD 2) - Directive (EU) 2015/2366"
+[13]: <"https://www.business2community.com/strategy/transparency-essential-building-corporate-brand-trust-01125911"> "Why Transparency is Essential for Building Corporate Brand Trust"
+[14]: <https://polkadot.network/PolkaDotPaper.pdf> "Polkadot: Vision for a heterrogeneous multi-chain framework"
+[15]: <https://medium.com/polkadot-network/what-is-polkadot-a-brief-introduction-ca3eac9ddca5> "What is Polkadot? A Brief Introduction"
+[16]: <https://substrate.io/> "Substrate Homepage"
+[17]: <https://docs.substrate.io/v3/runtime/frame/> "The FRAME architecture"
+[18]: <https://polkadot.network/parachains/> "What about Parachains"
+[19]: <https://www.europarl.europa.eu/news/en/headlines/economy/20180514STO03406/blockchain-technology-we-aspire-to-make-eu-leading-player> "Blockchain introduction"
