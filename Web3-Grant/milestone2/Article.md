@@ -79,9 +79,9 @@ As seen above, the electrical ecosystem is complex, with many stakeholders and w
 
 To do this, Delmonicos aims to equip each charge point with its innovative and universal software solution "Delmonicos inside" which will be composed of an operating system and a monitoring platform. 
 In addition, each user of the solution will be able:
-- to proceed payment either with his usual emobility application and his payment application to which the Delmonicos API has been integrated ;
-- to simply use Delmonicos web application (without any installation) ;
-- to use Delmonicos mobile application allowing a deeper and customized user experience.
+* to proceed payment either with his usual emobility application and his payment application to which the Delmonicos API has been integrated ;
+* to simply use Delmonicos web application (without any installation) ;
+* to use Delmonicos mobile application allowing a deeper and customized user experience.
 
 The final goal, when the ecosystem will be ready and the electrical vehicles able to send information to the connected Charge Point, Delmonicos will provide electric vehicle drivers an experience close to what a "Tesla" owner lives on a "Plug & Charge" Supercharger. He simply would connect his vehicle to the charging station to start charging. No identification problems or pricing surprise. Waiting for a more mature ecosystem, starting from the MVP, Delmonicos will provide a "Pay as you go" solution, allowing the process of charging without subscription using a standard payment mode (CB, Paypal, Apple Pay, ...) without any additional fee, and of course, disruptive payment solution.
 
@@ -125,25 +125,25 @@ The composability of the [FRAME architecture][17] allows us to reuse existing pa
 Since we have connections to multiple interfaces (payments, charging power, mobile apps) the offchain features of Substrate will allow us to handle the connection with external sources in both directions in a secure manner.
 
 ### REFS:
-[1]: https://ec.europa.eu/inea/en/connecting-europe-facility/ - "The Connecting Europe Facility (CEF) is a key EU funding instrument"
-[2]: https://www.consilium.europa.eu/en/policies/green-deal/eu-plan-for-a-green-transition/ - "The EU's plan for a green transition"
-[3]: https://op.europa.eu/webpub/eca/special-reports/electrical-recharging-5-2021/en/ - "report of an audit about charging station deployment"
-[4]: https://www.openchargealliance.org/ - "Main Page open charge alliance"
-[5]: https://evroaming.org/ocpi-background/ - "Main page EVRoaming Foundation about OCPI"
-[6]: https://en.wikipedia.org/wiki/ISO_15118 - "Wikipedia page about ISO 15118"
-[7]: https://en.wikipedia.org/wiki/OSI_model - "Wikipedia page about OSI Model"
-[8]: https://www.afirev.fr/en/recommendation-by-afirev-following-an-analysis-of-the-utilities-and-costs-of-iso-15118-communication-protocol-between-electric-vehicle-and-charging-point/ "Afirev recommendations about ISO15118"
-[9]: https://www.eurelectric.org/media/4563/20200709_eurelectric_features_and_implementation_of_iso15118_final-2020-030-0464-01-e-h-330B2A5B.pdf - "Eurelectric analysis and recommendations about communication protocols via EU harmonisation measures" 
-[10]: https://www.delmonicos.tech/ - "Delmonicos.tech homepage"
-[11]: https://en.wikipedia.org/wiki/Trusted_third_party - "Wikipedia page about Trusted Third Party"
-[12]: https://ec.europa.eu/info/law/payment-services-psd-2-directive-eu-2015-2366_en - "Payment services (PSD 2) - Directive (EU) 2015/2366"
-[13]: https://www.business2community.com/strategy/transparency-essential-building-corporate-brand-trust-01125911 - "Why Transparency is Essential for Building Corporate Brand Trust"
-[14]: https://polkadot.network/PolkaDotPaper.pdf - "Polkadot: Vision for a heterrogeneous multi-chain framework"
-[15]: https://medium.com/polkadot-network/what-is-polkadot-a-brief-introduction-ca3eac9ddca5 - "What is Polkadot? A Brief Introduction"
-[16]: https://substrate.io/ "Substrate Homepage"
-[17]: https://docs.substrate.io/v3/runtime/frame/ - "The FRAME architecture"
-[18]: https://polkadot.network/parachains/ - "What about Parachains"
-[19]: https://www.europarl.europa.eu/news/en/headlines/economy/20180514STO03406/blockchain-technology-we-aspire-to-make-eu-leading-player - "Blockchain introduction"
+* [1]: https://ec.europa.eu/inea/en/connecting-europe-facility/ - "The Connecting Europe Facility (CEF) is a key EU funding instrument"
+* [2]: https://www.consilium.europa.eu/en/policies/green-deal/eu-plan-for-a-green-transition/ - "The EU's plan for a green transition"
+* [3]: https://op.europa.eu/webpub/eca/special-reports/electrical-recharging-5-2021/en/ - "report of an audit about charging station deployment"
+* [4]: https://www.openchargealliance.org/ - "Main Page open charge alliance"
+* [5]: https://evroaming.org/ocpi-background/ - "Main page EVRoaming Foundation about OCPI"
+* [6]: https://en.wikipedia.org/wiki/ISO_15118 - "Wikipedia page about ISO 15118"
+* [7]: https://en.wikipedia.org/wiki/OSI_model - "Wikipedia page about OSI Model"
+* [8]: https://www.afirev.fr/en/recommendation-by-afirev-following-an-analysis-of-the-utilities-and-costs-of-iso-15118-communication-protocol-between-electric-vehicle-and-charging-point/ "Afirev recommendations about ISO15118"
+* [9]: https://www.eurelectric.org/media/4563/20200709_eurelectric_features_and_implementation_of_iso15118_final-2020-030-0464-01-e-h-330B2A5B.pdf - "Eurelectric analysis and recommendations about communication protocols via EU harmonisation measures" 
+* [10]: https://www.delmonicos.tech/ - "Delmonicos.tech homepage"
+* [11]: https://en.wikipedia.org/wiki/Trusted_third_party - "Wikipedia page about Trusted Third Party"
+* [12]: https://ec.europa.eu/info/law/payment-services-psd-2-directive-eu-2015-2366_en - "Payment services (PSD 2) - Directive (EU) 2015/2366"
+* [13]: https://www.business2community.com/strategy/transparency-essential-building-corporate-brand-trust-01125911 - "Why Transparency is Essential for Building Corporate Brand Trust"
+* [14]: https://polkadot.network/PolkaDotPaper.pdf - "Polkadot: Vision for a heterrogeneous multi-chain framework"
+* [15]: https://medium.com/polkadot-network/what-is-polkadot-a-brief-introduction-ca3eac9ddca5 - "What is Polkadot? A Brief Introduction"
+* [16]: https://substrate.io/ "Substrate Homepage"
+* [17]: https://docs.substrate.io/v3/runtime/frame/ - "The FRAME architecture"
+* [18]: https://polkadot.network/parachains/ - "What about Parachains"
+* [19]: https://www.europarl.europa.eu/news/en/headlines/economy/20180514STO03406/blockchain-technology-we-aspire-to-make-eu-leading-player - "Blockchain introduction"
 
 [1]: <https://ec.europa.eu/inea/en/connecting-europe-facility/> "The Connecting Europe Facility (CEF) is a key EU funding instrument"
 [2]: <https://www.consilium.europa.eu/en/policies/green-deal/eu-plan-for-a-green-transition/> "The EU's plan for a green transition"
