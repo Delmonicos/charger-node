@@ -92,7 +92,7 @@ Our roadmap is etablished and in our future versions, Delmonicos would deliver m
 To achieve this challenge, Delmonicos is using Blockchain technology based on the principle of [trusted third parties][11] that will provides EV Drivers a new generation of simple and interconnected solution creating a universal network of charging station accessible, anywhere, at any time at the right price.
 
 ### Why [blockchain][19] for electromobility?  
-The target is to propose a new solution being able to meet the requirement of the ecosystem being:
+The target is to propose a [new solution][20] being able to meet the requirement of the ecosystem being:
 * identification of the ev-driver / vehicle / any element plugged on a charge point 
 * authentication 
 * secure payment
@@ -144,6 +144,7 @@ Since we have connections to multiple interfaces (payments, charging power, mobi
 * [17]: https://docs.substrate.io/v3/runtime/frame/ - "The FRAME architecture"
 * [18]: https://polkadot.network/parachains/ - "What about Parachains"
 * [19]: https://www.europarl.europa.eu/news/en/headlines/economy/20180514STO03406/blockchain-technology-we-aspire-to-make-eu-leading-player - "Blockchain introduction"
+* [20]: https://www.youtube.com/watch?v=IiemzhwvFtg - "Decentralized Solutions for the Energy Sector
 
 [1]: <https://ec.europa.eu/inea/en/connecting-europe-facility/> "The Connecting Europe Facility (CEF) is a key EU funding instrument"
 [2]: <https://www.consilium.europa.eu/en/policies/green-deal/eu-plan-for-a-green-transition/> "The EU's plan for a green transition"
@@ -164,3 +165,4 @@ Since we have connections to multiple interfaces (payments, charging power, mobi
 [17]: <https://docs.substrate.io/v3/runtime/frame/> "The FRAME architecture"
 [18]: <https://polkadot.network/parachains/> "What about Parachains"
 [19]: <https://www.europarl.europa.eu/news/en/headlines/economy/20180514STO03406/blockchain-technology-we-aspire-to-make-eu-leading-player> "Blockchain introduction"
+[20]: <https://www.youtube.com/watch?v=IiemzhwvFtg> "Decentralized Solutions for the Energy Sector
