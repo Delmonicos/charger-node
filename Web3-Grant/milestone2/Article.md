@@ -97,7 +97,7 @@ The target is to propose a [new solution][20] being able to meet the requirement
 * authentication 
 * secure payment
 * governance
-* 
+
 The mandatory functionalities of solution are the following:
 
 * It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding [DSP2][12].
