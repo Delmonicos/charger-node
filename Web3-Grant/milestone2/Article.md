@@ -116,7 +116,7 @@ Considering the above-mentioned criteria, we have made the choice to develop our
 * The blockchain protocol allows several governance models.
 
 ### Why Polkadot ?
-Finally, we choose [Substrate][16]/[Polkadot][15] for the following reasons:
+Finally, we choose [Substrate][16] / [Polkadot][15] for the following reasons:
 
 * By having nodes with a dedicated purpose, we will be able to optimize the footprint of the node to deploy it to charging stations, or in the Cloud, that have limited available resources.
 * We can choose the most suitable consensus mechanism and especially [combine POA on the parachain with PoS on the relay chain][14].
