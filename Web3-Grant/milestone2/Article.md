@@ -1,5 +1,5 @@
 # How blockchain can ease electromobility
-Electromobility is essential piece of the energy transition and sustainable city, and it is an unmissable element in transport sector evolution. Electromobility allows the synergy between ecological, social, and technical values. 
+Electromobility is an essential piece of the energy transition and sustainable city, and it is an unmissable element in transport sector evolution. Electromobility allows the synergy between ecological, social, and technical values. 
 [Europe has a strong will to support][1] and help the electric car market development. Thanks to European Government actions it is now commonly accepted that [only electric vehicles will be supplied by vendors in the coming years][2].
 But moving from internal combustion engine vehicles to electric vehicles is not as easy as it seems. Most people are not convinced by electromobility due to the difficulty to locate a charging station, to connect into it, due to the lack of transparency and finally due to the charging time.
 Therefore, to accelerate electromobility development will [require to increase the number of public charge points and facilitate the access and connection to all of them][3]. 
@@ -21,7 +21,7 @@ More than understanding the entire electric charging process, it is important to
 * **eMSP** (eMobility Service Provider) is providing mobility services like giving access to charging stations to EV users through a RFID card of mobile App. 
 * **Aggregator** (Or Clearing House or hub) is a platform offering services that enable mobility operators to easily build partnerships between CPO and eMSP to enables electric mobility roaming.
 
-Those three players are the main ones, but there are other secondaries like **OEM Charge Points Manufacturers** who builds Charging Points, **NSP** (Navigation Service Provider) who provides location information of Charge Points, **Integrators** who supports new players who want to setup their own Charge Station, ...
+Those three players are the main ones, but there are other secondaries like **OEM Charge Points Manufacturers** who builds Charging Points, **NSP** (Navigation Service Provider) who provides location information of Charge Points, **Integrators** who supports new players who want to setup their own Charge Station...
 
 Moreover, some players might have several roles like a CPO who can be also eMSP and/or develop its own CPMS.
 
@@ -48,8 +48,8 @@ The common way to implement this protocol is to use a SecureWebSocket between th
 
 ### OCPI protocol
 The [OCPI protocol][5] is used in two ways:
-- in replacement of the private protocols used by the aggregators to exchange with CPO and with eMSP
-- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common usage of the protocol, as it's difficult to implement it for this purpose and both players must engage a contract themselves
+- in replacement of the private protocols used by the aggregators to exchange with CPO and with eMSP.
+- to exchange directly between eMSP and CPO without passing by an aggregator. It's a not very common usage of the protocol, as it's difficult to implement it for this purpose and both players must engage a contract themselves.
 
 Note: the above scheme about protocols does not take into consideration OCPI protocol used between CPO/eMSP and aggregators.
 
@@ -62,7 +62,7 @@ The ISO 15118 proposes several developments points of improvements:
 - a concrete implementation of Plug & Charge
 - smart charging solution allowing an intelligent management of the recharge. Using shared data connections between each tier of the charging process, smart charging allows to monitor, manage, and restricts the use of charging devices and optimizes energy consumption.  
 - bidirectional charging: v2h (vehicle to home), v2b (vehicle to building), v2g (vehicle to grid). Bidirectional charging allows to re-inject battery energy into the electrical grid to participate in the optimization of consumption peaks according to production peaks.
-- several more advanced scenarios requiring sophisticated equipment such as charging using induction or automated charging
+- several more advanced scenarios requiring sophisticated equipment such as charging using induction or automated charging.
 
 [This standard is now considered unavoidable in the electromobility world][8]. However, it is not yet fully implemented, because it requires significant strategical decisions and financial risks for the players and needs a joint participation of a major part of the stakeholders who must cooperate together. Today, only a few implementation initiatives have been published, often resulting from a R&D dynamic rather than from industrialization in production.
 
@@ -97,7 +97,7 @@ The target is to propose a [new solution][20] being able to meet the requirement
 * authentication 
 * secure payment
 * governance
-* 
+
 The mandatory functionalities of solution are the following:
 
 * It must be very **secure**. Especially, only allowed people and computers should be able to interact with charging stations. Payments must fulfill latest's security constraints especially regarding [DSP2][12].
@@ -118,10 +118,10 @@ Considering the above-mentioned criteria, we have made the choice to develop our
 ### Why Polkadot ?
 Finally, we choose [Substrate][16]/[Polkadot][15] for the following reasons:
 
-* By having nodes with a dedicated purpose, we will be able to optimize the footprint of the node to deploy it to charging stations, or in the Cloud, that have limited available resources
+* By having nodes with a dedicated purpose, we will be able to optimize the footprint of the node to deploy it to charging stations, or in the Cloud, that have limited available resources.
 * We can choose the most suitable consensus mechanism and especially [combine POA on the parachain with PoS on the relay chain][14].
 * We have the flexibility to choose between multiple target topologies. E.g. one parachain for all energy providers on the platform, or one parachain by energy provider.
-The composability of the [FRAME architecture][17] allows us to reuse existing pallets (e.g. identity, membership, contracts, ...) while being able to add our own specific pallets.
+The composability of the [FRAME architecture][17] allows us to reuse existing pallets (e.g. identity, membership, contracts...) while being able to add our own specific pallets.
 Since we have connections to multiple interfaces (payments, charging power, mobile apps) the offchain features of Substrate will allow us to handle the connection with external sources in both directions in a secure manner.
 
 ### REFS:
