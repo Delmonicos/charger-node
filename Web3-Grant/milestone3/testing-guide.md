@@ -13,6 +13,8 @@ The full demonstration of these two web application (and usage of Substrate node
 
 To start the blockchain node required for this milestone, please follow the instructions here: [https://github.com/Delmonicos/charger-node/blob/main/Web3-Grant/milestone2/testing-guide.md#build-and-run-the-chain-in-development-mode](milestone2/testing-guide).
 
+Both web applications must be run with node v16.
+
 ## Admin Frontend
 
 Project URL: [https://github.com/Delmonicos/charging-management-platform](https://github.com/Delmonicos/charging-management-platform)
