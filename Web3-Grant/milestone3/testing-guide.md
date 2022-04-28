@@ -11,7 +11,7 @@ The objective of this milestone 3 is to implement 2 webapps to demonstrate the D
 
 The full demonstration of these two web application (and usage of Substrate node) can be seen in the demonstration video here: [https://youtu.be/AlJrFuhhVN4](https://youtu.be/AlJrFuhhVN4)
 
-To start the blockchain node required for this milestone, please follow the instructions here: [https://github.com/Delmonicos/charger-node/blob/main/Web3-Grant/milestone2/testing-guide.md#build-and-run-the-chain-in-development-mode](milestone2/testing-guide).
+To start the blockchain node required for this milestone, please follow the instructions here: [milestone2/testing-guide](https://github.com/Delmonicos/charger-node/blob/main/Web3-Grant/milestone2/testing-guide.md#build-and-run-the-chain-in-development-mode).
 
 Both web applications must be run with node v16.
 
