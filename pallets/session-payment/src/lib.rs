@@ -3,20 +3,20 @@
 #[cfg(test)]
 mod tests;
 
-use serde::Serialize;
+//use serde::Serialize;
 use codec::{Decode, Encode};
 use core::convert::TryInto;
 use frame_support::traits::Currency;
 use pallet_timestamp as timestamp;
 use sp_std::prelude::*;
 
-#[derive(Serialize)]
+/*#[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct PaymentHttpRequest<'a> {
     from_iban: &'a str,
     from_bic: &'a str,
     amount: u128,
-}
+}*/
 
 #[derive(Debug, PartialEq, Default, Encode, Decode)]
 pub struct PaymentConsent<Moment> {
@@ -423,7 +423,7 @@ pub mod pallet {
 
         fn request_payment(iban: Vec<u8>, bic: Vec<u8>, amount: u128) -> Result<(), &'static str> {
 
-            let http_request = PaymentHttpRequest {
+            /*let http_request = PaymentHttpRequest {
                 from_iban: sp_std::str::from_utf8(&iban).unwrap(),
                 from_bic: sp_std::str::from_utf8(&bic).unwrap(),
                 amount: amount,
@@ -431,7 +431,8 @@ pub mod pallet {
             let serialized = serde_json::to_string(&http_request).unwrap();
             debug::native::debug!("payment request: {}", &serialized);
 
-            let body = serialized.as_bytes().to_vec();
+            let body = serialized.as_bytes().to_vec();*/
+            let body = "{\"from_iban\":\"DE89370400440532013000\",\"from_bic\":\"BELADEBEXXX\",\"amount\":\"100\"}".as_bytes().to_vec();
             let timeout = sp_io::offchain::timestamp().add(rt_offchain::Duration::from_millis(10000));
             let request = rt_offchain::http::Request::post(
                 "https://app-9b140c2a-277a-4cbb-96a6-6af5d21b0fe9.cleverapps.io/payments",

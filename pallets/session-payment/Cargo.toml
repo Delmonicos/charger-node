@@ -30,12 +30,12 @@ pallet-tariff-manager = { path = '../tariff-manager', default-features = false, 
 pallet-registrar = { path = '../registrar', default-features = false, version = '3.0.0' }
 # Contracts specific packages
 # pallet-contracts = { default-features = false, version = '3.0.0' }
-serde = { default-features = false, version = "1.0.119", features = ['derive'] }
-serde_json = { default-features = false, version = "1.0.64", features = ['alloc'] }
+#serde = { default-features = false, version = "1.0.119", features = ['derive'] }
+serde = { default-features = false, version = "1.0.119" }
+#serde_json = { default-features = false, version = "1.0.64", features = ['alloc'] }
 
 [dev-dependencies]
 serde = { version = "1.0.119" }
-sp-io = { default-features = false, version = '3.0.0' }
 pallet-did = { git = 'https://github.com/Delmonicos/pallet-did', default-features = false}
 hex-literal = "0.3.1"
 
